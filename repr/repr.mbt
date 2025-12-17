@@ -3,20 +3,40 @@
 ///
 /// `pub` makes it readonly outside this package: it can be pattern-matched but
 /// not directly constructed. Use the smart constructors below.
+///
+/// Design notes:
+/// - `Record` nodes are represented as `Record([Prop(name, value), ...])`.
+/// - `Assoc` nodes are represented as `Assoc(name, [AssocProp(key, value), ...])`.
+/// - `Opaque` is intended for “container-like” wrappers that keep a type/tag but
+///   otherwise behave structurally through their children.
 pub enum Repr {
+  /// Integer literal leaf.
   IntLit(Int)
+  /// Floating-point literal leaf.
   DoubleLit(Double)
+  /// Boolean literal leaf.
   BoolLit(Bool)
+  /// Character literal leaf.
   CharLit(Char)
+  /// String literal leaf.
   StringLit(String)
+  /// Array container node.
   Array(Array[Repr])
+  /// Record container node. Conventionally contains only `Prop` children.
   Record(Array[Repr])
+  /// Record field node. Conventionally appears only under `Record`.
   Prop(String, Repr)
+  /// Constructor/application node: `Ctor(name, args)`.
   Ctor(String, Array[Repr])
+  /// Opaque wrapper node: prints as `<name>` or `<name: ...>` and keeps children.
   Opaque(String, Array[Repr])
+  /// Pre-rendered leaf string (already formatted, no quoting/escaping applied).
   Literal(String)
+  /// Association/kv container with a tag name.
   Assoc(String, Array[Repr])
+  /// Key/value node. Conventionally appears only under `Assoc`.
   AssocProp(Repr, Repr)
+  /// Pruned subtree marker used by depth-limited pretty-printing.
   Omitted
 } derive(Eq, Compare)
 
@@ -27,66 +47,88 @@ pub fn Repr::int_lit(x : Int) -> Repr {
 }
 
 ///|
+/// Construct a `DoubleLit` leaf.
 pub fn Repr::double_lit(x : Double) -> Repr {
   DoubleLit(x)
 }
 
 ///|
+/// Construct a `BoolLit` leaf.
 pub fn Repr::bool_lit(x : Bool) -> Repr {
   BoolLit(x)
 }
 
 ///|
+/// Construct a `CharLit` leaf.
 pub fn Repr::char_lit(x : Char) -> Repr {
   CharLit(x)
 }
 
 ///|
+/// Construct a `StringLit` leaf.
 pub fn Repr::string_lit(x : String) -> Repr {
   StringLit(x)
 }
 
 ///|
+/// Construct an `Array` node from pre-built child `Repr`s.
 pub fn Repr::array(children : Array[Repr]) -> Repr {
   Array(children)
 }
 
 ///|
+/// Construct a `Record` node from pre-built child `Repr`s.
+///
+/// Prefer `record([("k", v), ...])` when you have name/value pairs; it ensures
+/// the `Record([Prop(..), ...])` convention.
 pub fn Repr::record(children : Array[Repr]) -> Repr {
   Record(children)
 }
 
 ///|
+/// Construct a `Prop(name, value)` record field node.
 pub fn Repr::prop(name : String, value : Repr) -> Repr {
   Prop(name, value)
 }
 
 ///|
+/// Construct a `Ctor(name, args)` node.
 pub fn Repr::ctor(name : String, args : Array[Repr]) -> Repr {
   Ctor(name, args)
 }
 
 ///|
+/// Construct an `Opaque(name, children)` node.
+///
+/// This is useful for values where you want to keep a tag/type name but still
+/// show a structural summary through children (e.g. `<Map: {...}>`).
 pub fn Repr::opaque_node(name : String, children : Array[Repr]) -> Repr {
   Opaque(name, children)
 }
 
 ///|
+/// Construct a `Literal(value)` leaf (already formatted).
 pub fn Repr::literal(value : String) -> Repr {
   Literal(value)
 }
 
 ///|
+/// Construct an `Assoc(name, children)` node from pre-built child `Repr`s.
+///
+/// Prefer `assoc(name, [(k, v), ...])` when you have key/value pairs; it ensures
+/// the `Assoc(name, [AssocProp(..), ...])` convention.
 pub fn Repr::assoc(name : String, children : Array[Repr]) -> Repr {
   Assoc(name, children)
 }
 
 ///|
+/// Construct an `AssocProp(key, value)` key/value node.
 pub fn Repr::assoc_prop(key : Repr, value : Repr) -> Repr {
   AssocProp(key, value)
 }
 
 ///|
+/// Construct an `Omitted` marker node.
 pub fn Repr::omitted() -> Repr {
   Omitted
 }
@@ -110,6 +152,11 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
 
 ///|
 /// Rebuild a `Repr` node with a new child list (payload is preserved).
+///
+/// Notes:
+/// - Leaf nodes ignore `children` and return themselves.
+/// - `Prop` expects exactly one child and falls back to `Prop(name, Omitted)`.
+/// - `AssocProp` expects exactly two children and falls back to `AssocProp(Omitted, Omitted)`.
 pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
   match self {
     IntLit(_)
@@ -139,6 +186,9 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
 
 ///|
 /// A shallow copy of `self` containing only its “label” (children replaced).
+///
+/// This is used by diff/pretty-print when the structure is preserved but
+/// children are rendered separately.
 pub fn Repr::shallow(self : Repr) -> Repr {
   match self {
     IntLit(_)
