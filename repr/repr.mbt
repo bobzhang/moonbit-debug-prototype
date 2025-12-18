@@ -26,6 +26,8 @@ pub enum Repr {
   CharLit(Char)
   /// String literal leaf.
   StringLit(String)
+  /// Tuple node. Children are the tuple elements (`Tuple([])` is unit).
+  Tuple(Array[Repr])
   /// Array container node.
   Array(Array[Repr])
   /// Record container node. Conventionally contains only `Prop` children.
@@ -76,6 +78,12 @@ pub fn Repr::char_lit(x : Char) -> Repr {
 /// Construct a `StringLit` leaf.
 pub fn Repr::string_lit(x : String) -> Repr {
   StringLit(x)
+}
+
+///|
+/// Construct a `Tuple` node from pre-built child `Repr`s.
+pub fn Repr::tuple(children : Array[Repr]) -> Repr {
+  Tuple(children)
 }
 
 ///|
@@ -158,7 +166,12 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
     | StringLit(_)
     | Literal(_)
     | Omitted => []
-    Array(xs) | Record(xs) | Ctor(_, xs) | Opaque(_, xs) | Assoc(_, xs) => xs
+    Tuple(xs)
+    | Array(xs)
+    | Record(xs)
+    | Ctor(_, xs)
+    | Opaque(_, xs)
+    | Assoc(_, xs) => xs
     Prop(_, value) | Arg(_, value) => [value]
     AssocProp(key, value) => [key, value]
   }
@@ -180,6 +193,7 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
     | StringLit(_)
     | Literal(_)
     | Omitted => self
+    Tuple(_) => Tuple(children)
     Array(_) => Array(children)
     Record(_) => Record(children)
     Ctor(name, _) => Ctor(name, children)
@@ -217,6 +231,7 @@ pub fn Repr::shallow(self : Repr) -> Repr {
     | StringLit(_)
     | Literal(_)
     | Omitted => self
+    Tuple(_) => Tuple([])
     Array(_) => Array([])
     Record(_) => Record([])
     Ctor(name, _) => Ctor(name, [])
@@ -256,6 +271,18 @@ pub fn char(x : Char) -> Repr {
 /// Construct a string `Repr`.
 pub fn string(x : String) -> Repr {
   Repr::string_lit(x)
+}
+
+///|
+/// Construct a tuple `Repr` from pre-built child `Repr`s.
+pub fn tuple(xs : Array[Repr]) -> Repr {
+  Repr::tuple(xs)
+}
+
+///|
+/// Construct a unit `Repr` (`()`).
+pub fn unit() -> Repr {
+  tuple([])
 }
 
 ///|

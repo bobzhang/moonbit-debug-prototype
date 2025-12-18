@@ -191,6 +191,7 @@ fn info_size(info : @repr.Repr) -> Int {
     BoolLit(_) => 1
     CharLit(_) => 1
     StringLit(s) => if s.length() <= 15 { 1 } else { 2 }
+    Tuple(_) => 1
     Array(_) => 1
     Record(_) => 2
     Prop(name, _) => if name.length() <= 15 { 0 } else { 1 }
@@ -314,6 +315,7 @@ fn pretty_print_repr_go(
     BoolLit(x) => leaf(x)
     CharLit(x) => leaf(x)
     StringLit(x) => no_parens(verbatim(quote_string_literal(x)))
+    Tuple(_) => comma_seq("(", ")", children.map(no_wrap))
     Ctor(name, _) =>
       match children {
         [] => no_parens(verbatim(name))

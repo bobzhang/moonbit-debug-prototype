@@ -11,6 +11,11 @@ test "facade: Repr constructors pretty-print as expected" {
   inspect(pretty_print_repr_with(opts, bool(true)), content="true")
   inspect(pretty_print_repr_with(opts, char('x')), content="'x'")
   inspect(pretty_print_repr_with(opts, string("hi")), content="\"hi\"")
+  inspect(pretty_print_repr_with(opts, unit()), content="()")
+  inspect(
+    pretty_print_repr_with(opts, tuple([int(1), string("x")])),
+    content="(1, \"x\")",
+  )
   inspect(
     pretty_print_repr_with(opts, array([int(1), int(2)])),
     content="[ 1, 2 ]",

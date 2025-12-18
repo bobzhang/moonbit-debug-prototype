@@ -34,6 +34,11 @@ pub impl Debug for String with debug(self) {
 }
 
 ///|
+pub impl Debug for Unit with debug(_) {
+  unit()
+}
+
+///|
 pub impl[T : Debug] Debug for Array[T] with debug(self) {
   array(self.map(fn(x) { debug(x) }))
 }
@@ -49,7 +54,7 @@ pub impl[T : Debug] Debug for T? with debug(self) {
 ///|
 pub impl[A : Debug, B : Debug] Debug for (A, B) with debug(self) {
   let (a, b) = self
-  ctor("Tuple", [debug(a), debug(b)])
+  tuple([debug(a), debug(b)])
 }
 
 ///|

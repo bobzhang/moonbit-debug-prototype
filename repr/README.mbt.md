@@ -63,3 +63,46 @@ match r {
   _ => fail("unexpected Repr shape for record {x:Int; y:String}")
 }
 ```
+
+## Tuples (and unit)
+
+Tuples are represented as:
+
+- `Tuple([a, b, ...])`
+
+Unit is the empty tuple:
+
+- `Tuple([])` (also constructible with `unit()`)
+
+### Example (runnable)
+
+```mbt test
+let t : Repr = tuple([int(1), string("x")])
+match t {
+  Repr::Tuple([Repr::IntLit(1), Repr::StringLit("x")]) => ()
+  _ => fail("unexpected Repr shape for tuple (Int, String)")
+}
+```
+
+## Labeled constructor arguments
+
+MoonBit enum variants (and tuple-struct constructors) can have labeled arguments.
+To preserve those labels in a `Repr`, use `Arg(label, value)` nodes as children
+of `Ctor`:
+
+- `Ctor("A", [Arg("x", ...), Arg("y", ...)])` prints as `A(x=..., y=...)`
+- you can freely mix positional and labeled args:
+  `Ctor("B", [Arg("x", ...), ...])` prints as `B(x=..., ...)`
+
+### Example (runnable)
+
+```mbt test
+let r : Repr = ctor("A", [arg("x", int(1)), arg("y", string("hi"))])
+match r {
+  Repr::Ctor(
+    "A",
+    [Repr::Arg("x", Repr::IntLit(1)), Repr::Arg("y", Repr::StringLit("hi"))]
+  ) => ()
+  _ => fail("unexpected Repr shape for labeled ctor A(x=Int, y=String)")
+}
+```

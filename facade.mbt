@@ -25,6 +25,16 @@ pub fn string(x : String) -> @repr.Repr {
 }
 
 ///|
+pub fn tuple(xs : Array[@repr.Repr]) -> @repr.Repr {
+  @repr.tuple(xs)
+}
+
+///|
+pub fn unit() -> @repr.Repr {
+  @repr.unit()
+}
+
+///|
 pub fn array(xs : Array[@repr.Repr]) -> @repr.Repr {
   @repr.array(xs)
 }

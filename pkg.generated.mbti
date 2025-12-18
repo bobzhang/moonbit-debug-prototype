@@ -70,6 +70,10 @@ pub fn record(Array[(String, @repr.Repr)]) -> @repr.Repr
 
 pub fn string(String) -> @repr.Repr
 
+pub fn tuple(Array[@repr.Repr]) -> @repr.Repr
+
+pub fn unit() -> @repr.Repr
+
 // Errors
 
 // Types and methods
@@ -80,6 +84,7 @@ pub fn string(String) -> @repr.Repr
 pub(open) trait Debug {
   debug(Self) -> @repr.Repr
 }
+pub impl Debug for Unit
 pub impl Debug for Bool
 pub impl Debug for Char
 pub impl Debug for Int

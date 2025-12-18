@@ -86,6 +86,7 @@ fn info_approx_eq(
     (StringLit(x1), StringLit(y1)) => x1 == y1
     (Literal(x1), Literal(y1)) => x1 == y1
     (Omitted, Omitted) => true
+    (Tuple(_), Tuple(_)) => true
     (Array(_), Array(_)) => true
     (Record(_), Record(_)) => true
     (Prop(n1, _), Prop(n2, _)) => n1 == n2
@@ -102,7 +103,7 @@ fn info_approx_eq(
 /// Labels that are treated as structural “containers” (may be collapsed in diffs).
 fn info_is_unimportant(info : @repr.Repr) -> Bool {
   match info {
-    AssocProp(_, _) | Array(_) | Record(_) => true
+    AssocProp(_, _) | Tuple(_) | Array(_) | Record(_) => true
     _ => false
   }
 }
