@@ -40,7 +40,7 @@ using @repr {type Repr}
 
 ///|
 test "prop bad cases" {
-  let elem = Repr::prop(
+  let elem = Repr::field(
     "x",
     Repr::arg("y", Repr::assoc_prop(Repr::string("key"), Repr::bool(true))),
   )

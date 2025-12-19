@@ -34,7 +34,7 @@ pub enum Repr {
   /// Record container node. Conventionally contains only `Prop` children.
   Record(Array[Repr])
   /// Record field node. Conventionally appears only under `Record`.
-  Prop(String, Repr)
+  Field(String, Repr)
   /// Labeled argument node. Conventionally appears only under `Ctor`.
   Arg(String, Repr)
   /// Constructor/application node: `Ctor(name, args)`.
@@ -96,13 +96,13 @@ pub fn Repr::array(children : Array[Repr]) -> Repr {
 ///|
 /// Construct a `Record` node from pre-built child `Repr`s.
 pub fn Repr::record(fields : Map[String, Repr]) -> Repr {
-  Record(fields.to_array().map(fn(p) { Repr::Prop(p.0, p.1) }))
+  Record(fields.to_array().map(fn(p) { Repr::Field(p.0, p.1) }))
 }
 
 ///|
 /// Construct a `Prop(name, value)` record field node.
-pub fn Repr::prop(name : String, value : Repr) -> Repr {
-  Prop(name, value)
+pub fn Repr::field(name : String, value : Repr) -> Repr {
+  Field(name, value)
 }
 
 ///|
@@ -171,7 +171,7 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
     | Ctor(_, xs)
     | Opaque(_, xs)
     | Assoc(xs) => xs
-    Prop(_, value) | Arg(_, value) => [value]
+    Field(_, value) | Arg(_, value) => [value]
     AssocProp(key, value) => [key, value]
   }
 }
@@ -199,10 +199,10 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
     Ctor(name, _) => Ctor(name, children)
     Opaque(name, _) => Opaque(name, children)
     Assoc(_) => Assoc(children)
-    Prop(name, _) =>
+    Field(name, _) =>
       match children {
-        [value] => Prop(name, value)
-        _ => Prop(name, Omitted)
+        [value] => Field(name, value)
+        _ => Field(name, Omitted)
       }
     Arg(label, _) =>
       match children {
@@ -238,7 +238,7 @@ pub fn Repr::shallow(self : Repr) -> Repr {
     Ctor(name, _) => Ctor(name, [])
     Opaque(name, _) => Opaque(name, [])
     Assoc(_) => Assoc([])
-    Prop(name, _) => Prop(name, Omitted)
+    Field(name, _) => Field(name, Omitted)
     Arg(label, _) => Arg(label, Omitted)
     AssocProp(_, _) => AssocProp(Omitted, Omitted)
   }

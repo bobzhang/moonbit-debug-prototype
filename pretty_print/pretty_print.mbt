@@ -18,7 +18,7 @@ pub let default_pretty_print_options : PrettyPrintOptions = {
 /// Whether visiting this node should decrement the remaining depth budget.
 fn info_adds_depth(info : @repr.Repr) -> Bool {
   match info {
-    Prop(_, _) | Arg(_, _) | AssocProp(_, _) => false
+    Field(_, _) | Arg(_, _) | AssocProp(_, _) => false
     _ => true
   }
 }
@@ -195,7 +195,7 @@ fn info_size(info : @repr.Repr) -> Int {
     Tuple(_) => 1
     Array(_) => 1
     Record(_) => 2
-    Prop(name, _) => if name.length() <= 15 { 0 } else { 1 }
+    Field(name, _) => if name.length() <= 15 { 0 } else { 1 }
     Arg(name, _) => if name.length() <= 15 { 0 } else { 1 }
     Ctor(name, _) => if name.length() <= 15 { 1 } else { 2 }
     Opaque(name, _) => if name.length() <= 15 { 1 } else { 2 }
@@ -363,7 +363,7 @@ fn pretty_print_repr_go(
           }
         _ => empty_content()
       }
-    Prop(name, _) =>
+    Field(name, _) =>
       match children {
         [val] =>
           no_parens(

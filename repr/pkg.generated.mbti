@@ -31,7 +31,7 @@ pub enum Repr {
   Tuple(Array[Repr])
   Array(Array[Repr])
   Record(Array[Repr])
-  Prop(String, Repr)
+  Field(String, Repr)
   Arg(String, Repr)
   Ctor(String, Array[Repr])
   Opaque(String, Array[Repr])
@@ -49,11 +49,11 @@ pub fn Repr::char(Char) -> Self
 pub fn Repr::children(Self) -> Array[Self]
 pub fn Repr::ctor(String, Array[Self]) -> Self
 pub fn Repr::double(Double) -> Self
+pub fn Repr::field(String, Self) -> Self
 pub fn Repr::int(Int) -> Self
 pub fn Repr::literal(String) -> Self
 pub fn Repr::omitted() -> Self
 pub fn Repr::opaque_node(String, Array[Self]) -> Self
-pub fn Repr::prop(String, Self) -> Self
 pub fn Repr::record(Map[String, Self]) -> Self
 pub fn Repr::shallow(Self) -> Self
 pub fn Repr::string(String) -> Self
