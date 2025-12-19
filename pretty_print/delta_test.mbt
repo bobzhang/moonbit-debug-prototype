@@ -37,7 +37,7 @@ test "diff printing: record field changes keep field name" {
 ///|
 test "prune: does not count Prop as depth" {
   let r = @repr.Repr::record({
-    "x": @repr.ctor("A", [@repr.ctor("B", [@repr.Repr::int(1)])]),
+    "x": @repr.Repr::ctor("A", [@repr.Repr::ctor("B", [@repr.Repr::int(1)])]),
   })
   let opts : PrettyPrintOptions = {
     max_depth: Some(2),

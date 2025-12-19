@@ -4,8 +4,6 @@
 pub using @repr {
   type Repr,
   unit,
-  ctor,
-  arg,
   opaque_child,
   opaque_,
   opaque_literal,

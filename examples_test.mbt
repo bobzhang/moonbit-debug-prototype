@@ -19,10 +19,13 @@ enum Expr {
 ///|
 pub impl Debug for Expr with debug(self) {
   match self {
-    Lit(n) => ctor("Lit", [debug(n)])
-    Var(s) => ctor("Var", [debug(s)])
+    Lit(n) => Repr::ctor("Lit", [debug(n)])
+    Var(s) => Repr::ctor("Var", [debug(s)])
     Add(left~, right~) =>
-      ctor("Add", [arg("left", debug(left)), arg("right", debug(right))])
+      Repr::ctor("Add", [
+        Repr::labeled("left", debug(left)),
+        Repr::labeled("right", debug(right)),
+      ])
   }
 }
 

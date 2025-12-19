@@ -7,7 +7,7 @@ fn opts_no_ansi() -> PrettyPrintOptions {
 test "pretty_print: ctor without args prints without parens" {
   let opts = opts_no_ansi()
   inspect(
-    pretty_print_repr_with(opts, @repr.ctor("Nothing", [])),
+    pretty_print_repr_with(opts, @repr.Repr::ctor("Nothing", [])),
     content="Nothing",
   )
 }

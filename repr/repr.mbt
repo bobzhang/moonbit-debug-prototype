@@ -253,18 +253,6 @@ pub fn unit() -> Repr {
 }
 
 ///|
-/// Construct a constructor/application `Repr` with a name and argument list.
-pub fn ctor(name : String, args : Array[Repr]) -> Repr {
-  Repr::ctor(name, args)
-}
-
-///|
-/// Construct a labeled argument node.
-pub fn arg(label : String, value : Repr) -> Repr {
-  Repr::labeled(label, value)
-}
-
-///|
 /// Construct an opaque wrapper `Repr` with a single child.
 pub fn opaque_child(name : String, child : Repr) -> Repr {
   Repr::opaque_node(name, [child])

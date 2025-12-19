@@ -46,8 +46,8 @@ pub impl[T : Debug] Debug for Array[T] with debug(self) {
 ///|
 pub impl[T : Debug] Debug for T? with debug(self) {
   match self {
-    None => ctor("None", [])
-    Some(x) => ctor("Some", [debug(x)])
+    None => Repr::ctor("None", [])
+    Some(x) => Repr::ctor("Some", [debug(x)])
   }
 }
 

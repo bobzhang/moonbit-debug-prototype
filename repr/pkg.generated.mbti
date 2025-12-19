@@ -2,11 +2,7 @@
 package "dii_user/moonbit_debugged/repr"
 
 // Values
-pub fn arg(String, Repr) -> Repr
-
 pub fn collection(String, Array[Repr]) -> Repr
-
-pub fn ctor(String, Array[Repr]) -> Repr
 
 pub fn opaque_(String) -> Repr
 

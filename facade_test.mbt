@@ -28,20 +28,23 @@ test "facade: Repr constructors pretty-print as expected" {
     content="{ a: 1, b: 2 }",
   )
   inspect(
-    pretty_print_repr_with(opts, ctor("Ok", [Repr::string("yes")])),
+    pretty_print_repr_with(opts, Repr::ctor("Ok", [Repr::string("yes")])),
     content="Ok(\"yes\")",
   )
   inspect(
     pretty_print_repr_with(
       opts,
-      ctor("A", [arg("x", Repr::int(1)), arg("y", Repr::string("yes"))]),
+      Repr::ctor("A", [
+        Repr::labeled("x", Repr::int(1)),
+        Repr::labeled("y", Repr::string("yes")),
+      ]),
     ),
     content="A(x=1, y=\"yes\")",
   )
   inspect(
     pretty_print_repr_with(
       opts,
-      ctor("B", [arg("x", Repr::int(1)), Repr::string("s")]),
+      Repr::ctor("B", [Repr::labeled("x", Repr::int(1)), Repr::string("s")]),
     ),
     content="B(x=1, \"s\")",
   )

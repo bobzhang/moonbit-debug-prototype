@@ -8,11 +8,7 @@ import(
 )
 
 // Values
-pub fn arg(String, @repr.Repr) -> @repr.Repr
-
 pub fn collection(String, Array[@repr.Repr]) -> @repr.Repr
-
-pub fn ctor(String, Array[@repr.Repr]) -> @repr.Repr
 
 pub fn[T : Debug] debug(T) -> @repr.Repr
 
