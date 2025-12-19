@@ -4,11 +4,11 @@ package "dii_user/moonbit_debugged/repr"
 // Values
 pub fn arg(String, Repr) -> Repr
 
-pub fn assoc(Array[(Repr, Repr)]) -> Repr
-
 pub fn collection(String, Array[Repr]) -> Repr
 
 pub fn ctor(String, Array[Repr]) -> Repr
+
+pub fn dict(Array[(Repr, Repr)]) -> Repr
 
 pub fn opaque_(String) -> Repr
 
@@ -36,18 +36,18 @@ pub enum Repr {
   Ctor(String, Array[Repr])
   Opaque(String, Array[Repr])
   Literal(String)
-  Assoc(Array[Repr])
-  AssocProp(Repr, Repr)
+  Dict(Array[Repr])
+  Entry(Repr, Repr)
   Omitted
 }
 pub fn Repr::arg(String, Self) -> Self
 pub fn Repr::array(Array[Self]) -> Self
-pub fn Repr::assoc(Array[Self]) -> Self
 pub fn Repr::assoc_prop(Self, Self) -> Self
 pub fn Repr::bool(Bool) -> Self
 pub fn Repr::char(Char) -> Self
 pub fn Repr::children(Self) -> Array[Self]
 pub fn Repr::ctor(String, Array[Self]) -> Self
+pub fn Repr::dict(Array[Self]) -> Self
 pub fn Repr::double(Double) -> Self
 pub fn Repr::field(String, Self) -> Self
 pub fn Repr::int(Int) -> Self

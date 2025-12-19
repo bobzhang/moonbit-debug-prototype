@@ -10,7 +10,6 @@ pub using @repr {
   opaque_,
   opaque_literal,
   collection,
-  assoc,
 }
 
 ///|

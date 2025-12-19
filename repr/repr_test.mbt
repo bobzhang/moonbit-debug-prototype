@@ -17,7 +17,7 @@ test "repr: with_children falls back for Prop and AssocProp" {
   }
   let ap = Repr::assoc_prop(Repr::string("k"), Repr::int(1))
   match Repr::with_children(ap, [Repr::int(0)]) {
-    AssocProp(Omitted, Omitted) => ()
+    Entry(Omitted, Omitted) => ()
     _ => fail("expected AssocProp(Omitted, Omitted) fallback")
   }
 }
@@ -29,9 +29,9 @@ test "repr: record and assoc builders are structural" {
     Record([Field("a", IntLit(1)), Field("b", BoolLit(true))]) => ()
     _ => fail("expected record to lower into Prop children")
   }
-  let m = assoc([(Repr::string("a"), Repr::int(1))])
+  let m = dict([(Repr::string("a"), Repr::int(1))])
   match m {
-    Assoc([AssocProp(StringLit("a"), IntLit(1))]) => ()
+    Dict([Entry(StringLit("a"), IntLit(1))]) => ()
     _ => fail("expected assoc to lower into AssocProp children")
   }
 }

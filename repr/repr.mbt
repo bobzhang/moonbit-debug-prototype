@@ -44,9 +44,9 @@ pub enum Repr {
   /// Pre-rendered leaf string (already formatted, no quoting/escaping applied).
   Literal(String)
   /// Association/kv container for map literals.
-  Assoc(Array[Repr])
+  Dict(Array[Repr])
   /// Key/value node. Conventionally appears only under `Assoc`.
-  AssocProp(Repr, Repr)
+  Entry(Repr, Repr)
   /// Pruned subtree marker used by depth-limited pretty-printing.
   Omitted
 } derive(Eq, Compare)
@@ -137,14 +137,14 @@ pub fn Repr::literal(value : String) -> Repr {
 ///
 /// Prefer `assoc([(k, v), ...])` when you have key/value pairs; it ensures
 /// the `Assoc([AssocProp(..), ...])` convention.
-pub fn Repr::assoc(children : Array[Repr]) -> Repr {
-  Assoc(children)
+pub fn Repr::dict(children : Array[Repr]) -> Repr {
+  Dict(children)
 }
 
 ///|
 /// Construct an `AssocProp(key, value)` key/value node.
 pub fn Repr::assoc_prop(key : Repr, value : Repr) -> Repr {
-  AssocProp(key, value)
+  Entry(key, value)
 }
 
 ///|
@@ -170,9 +170,9 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
     | Record(xs)
     | Ctor(_, xs)
     | Opaque(_, xs)
-    | Assoc(xs) => xs
+    | Dict(xs) => xs
     Field(_, value) | Arg(_, value) => [value]
-    AssocProp(key, value) => [key, value]
+    Entry(key, value) => [key, value]
   }
 }
 
@@ -198,7 +198,7 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
     Record(_) => Record(children)
     Ctor(name, _) => Ctor(name, children)
     Opaque(name, _) => Opaque(name, children)
-    Assoc(_) => Assoc(children)
+    Dict(_) => Dict(children)
     Field(name, _) =>
       match children {
         [value] => Field(name, value)
@@ -209,10 +209,10 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
         [value] => Arg(label, value)
         _ => Arg(label, Omitted)
       }
-    AssocProp(_, _) =>
+    Entry(_, _) =>
       match children {
-        [key, value] => AssocProp(key, value)
-        _ => AssocProp(Omitted, Omitted)
+        [key, value] => Entry(key, value)
+        _ => Entry(Omitted, Omitted)
       }
   }
 }
@@ -237,10 +237,10 @@ pub fn Repr::shallow(self : Repr) -> Repr {
     Record(_) => Record([])
     Ctor(name, _) => Ctor(name, [])
     Opaque(name, _) => Opaque(name, [])
-    Assoc(_) => Assoc([])
+    Dict(_) => Dict([])
     Field(name, _) => Field(name, Omitted)
     Arg(label, _) => Arg(label, Omitted)
-    AssocProp(_, _) => AssocProp(Omitted, Omitted)
+    Entry(_, _) => Entry(Omitted, Omitted)
   }
 }
 
@@ -288,8 +288,8 @@ pub fn collection(name : String, contents : Array[Repr]) -> Repr {
 
 ///|
 /// Construct an association/kv `Repr` from key/value `Repr` pairs.
-pub fn assoc(contents : Array[(Repr, Repr)]) -> Repr {
-  Repr::assoc(
+pub fn dict(contents : Array[(Repr, Repr)]) -> Repr {
+  Repr::dict(
     contents.map(fn(pair) {
       let (k, v) = pair
       Repr::assoc_prop(k, v)
