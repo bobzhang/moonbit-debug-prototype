@@ -30,7 +30,7 @@ test "pretty_print delta for map (no ansi)" {
 
 ///|
 test "opaque types have a repr" {
-  let r = opaque_("function")
+  let r = Repr::opaque_("function", [])
   inspect(pretty_print_repr(r), content="<function>")
   inspect(pretty_print_delta(diff_repr(r, r)), content="<function>")
 }

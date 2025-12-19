@@ -1,14 +1,7 @@
 ///|
 /// Re-export `Repr` type and smart constructors from `@repr`.
 /// Use `Repr::int(x)`, `Repr::string(s)`, etc. to construct values.
-pub using @repr {
-  type Repr,
-  unit,
-  opaque_child,
-  opaque_,
-  opaque_literal,
-  collection,
-}
+pub using @repr {type Repr}
 
 ///|
 /// Diffing (forwarded to `@diff`).

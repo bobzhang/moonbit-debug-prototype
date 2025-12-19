@@ -2,15 +2,6 @@
 package "dii_user/moonbit_debugged/repr"
 
 // Values
-pub fn collection(String, Array[Repr]) -> Repr
-
-pub fn opaque_(String) -> Repr
-
-pub fn opaque_child(String, Repr) -> Repr
-
-pub fn opaque_literal(String, String) -> Repr
-
-pub fn unit() -> Repr
 
 // Errors
 
@@ -47,12 +38,13 @@ pub fn Repr::int(Int) -> Self
 pub fn Repr::labeled(String, Self) -> Self
 pub fn Repr::literal(String) -> Self
 pub fn Repr::omitted() -> Self
-pub fn Repr::opaque_node(String, Array[Self]) -> Self
+pub fn Repr::opaque_(String, Array[Self]) -> Self
 pub fn Repr::record(Map[String, Self]) -> Self
 pub fn Repr::shallow(Self) -> Self
 pub fn Repr::string(String) -> Self
 pub fn Repr::traverse(Self, (Self) -> Self) -> Self
 pub fn Repr::tuple(Array[Self]) -> Self
+pub fn Repr::unit() -> Self
 pub fn Repr::with_children(Self, Array[Self]) -> Self
 pub impl Compare for Repr
 pub impl Eq for Repr

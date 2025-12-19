@@ -8,8 +8,6 @@ import(
 )
 
 // Values
-pub fn collection(String, Array[@repr.Repr]) -> @repr.Repr
-
 pub fn[T : Debug] debug(T) -> @repr.Repr
 
 pub let default_diff_options : @diff.DiffOptions
@@ -25,12 +23,6 @@ pub fn diff_repr(@repr.Repr, @repr.Repr) -> @diff.ReprDelta
 pub fn diff_repr_with(@diff.DiffOptions, @repr.Repr, @repr.Repr) -> @diff.ReprDelta
 
 pub fn[T : Debug] diff_with(@diff.DiffOptions, T, T) -> @diff.ReprDelta
-
-pub fn opaque_(String) -> @repr.Repr
-
-pub fn opaque_child(String, @repr.Repr) -> @repr.Repr
-
-pub fn opaque_literal(String, String) -> @repr.Repr
 
 pub fn[T : Debug] pretty_print(T) -> String
 
@@ -49,8 +41,6 @@ pub fn pretty_print_repr(@repr.Repr) -> String
 pub fn pretty_print_repr_with(@pretty_print.PrettyPrintOptions, @repr.Repr) -> String
 
 pub fn[T : Debug] pretty_print_with(@pretty_print.PrettyPrintOptions, T) -> String
-
-pub fn unit() -> @repr.Repr
 
 // Errors
 

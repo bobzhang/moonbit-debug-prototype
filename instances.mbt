@@ -5,12 +5,12 @@ pub impl Debug for Int with debug(self) {
 
 ///|
 pub impl Debug for Int64 with debug(self) {
-  opaque_literal("Int64", repr(self))
+  Repr::opaque_("Int64", [Repr::literal(self.to_string())])
 }
 
 ///|
 pub impl Debug for UInt with debug(self) {
-  opaque_literal("UInt", repr(self))
+  Repr::opaque_("UInt", [Repr::literal(self.to_string())])
 }
 
 ///|
@@ -35,7 +35,7 @@ pub impl Debug for String with debug(self) {
 
 ///|
 pub impl Debug for Unit with debug(_) {
-  unit()
+  Repr::tuple([])
 }
 
 ///|

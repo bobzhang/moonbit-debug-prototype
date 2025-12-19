@@ -15,7 +15,7 @@ test "pretty_print: ctor without args prints without parens" {
 ///|
 test "pretty_print: opaque with children compacts to one line" {
   let opts = opts_no_ansi()
-  let r = @repr.opaque_child("Int64", @repr.Repr::literal("123"))
+  let r = @repr.Repr::opaque_("Int64", [@repr.Repr::literal("123")])
   inspect(pretty_print_repr_with(opts, r), content="<Int64: 123>")
 }
 

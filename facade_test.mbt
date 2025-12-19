@@ -11,7 +11,7 @@ test "facade: Repr constructors pretty-print as expected" {
   inspect(pretty_print_repr_with(opts, Repr::bool(true)), content="true")
   inspect(pretty_print_repr_with(opts, Repr::char('x')), content="'x'")
   inspect(pretty_print_repr_with(opts, Repr::string("hi")), content="\"hi\"")
-  inspect(pretty_print_repr_with(opts, unit()), content="()")
+  inspect(pretty_print_repr_with(opts, Repr::tuple([])), content="()")
   inspect(
     pretty_print_repr_with(opts, Repr::tuple([Repr::int(1), Repr::string("x")])),
     content="(1, \"x\")",
@@ -49,17 +49,17 @@ test "facade: Repr constructors pretty-print as expected" {
     content="B(x=1, \"s\")",
   )
   inspect(
-    pretty_print_repr_with(opts, opaque_("function")),
+    pretty_print_repr_with(opts, Repr::opaque_("function", [])),
     content="<function>",
   )
   inspect(
-    pretty_print_repr_with(opts, opaque_literal("Int64", "1")),
+    pretty_print_repr_with(opts, Repr::opaque_("Int64", [Repr::literal("1")])),
     content="<Int64: 1>",
   )
   inspect(
     pretty_print_repr_with(
       opts,
-      collection("Vec", [Repr::int(1), Repr::int(2)]),
+      Repr::opaque_("Vec", [Repr::array([Repr::int(1), Repr::int(2)])]),
     ),
     content="<Vec: [ 1, 2 ]>",
   )

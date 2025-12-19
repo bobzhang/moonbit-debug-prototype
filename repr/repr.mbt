@@ -52,6 +52,11 @@ pub enum Repr {
 } derive(Eq, Compare)
 
 ///|
+pub fn Repr::unit() -> Repr {
+  UnitLit
+}
+
+///|
 /// Smart constructors for `Repr` (constructible outside the package).
 pub fn Repr::int(x : Int) -> Repr {
   IntLit(x)
@@ -122,7 +127,7 @@ pub fn Repr::ctor(name : String, args : Array[Repr]) -> Repr {
 ///
 /// This is useful for values where you want to keep a tag/type name but still
 /// show a structural summary through children (e.g. `<Map: {...}>`).
-pub fn Repr::opaque_node(name : String, children : Array[Repr]) -> Repr {
+pub fn Repr::opaque_(name : String, children : Array[Repr]) -> Repr {
   Opaque(name, children)
 }
 
@@ -259,34 +264,4 @@ pub fn Repr::shallow(self : Repr) -> Repr {
     Labeled(label, _) => Labeled(label, Omitted)
     Entry(_, _) => Entry(Omitted, Omitted)
   }
-}
-
-///|
-/// Construct a unit `Repr` (`()`).
-pub fn unit() -> Repr {
-  Repr::UnitLit
-}
-
-///|
-/// Construct an opaque wrapper `Repr` with a single child.
-pub fn opaque_child(name : String, child : Repr) -> Repr {
-  Repr::opaque_node(name, [child])
-}
-
-///|
-/// Construct an opaque wrapper `Repr` with no children.
-pub fn opaque_(name : String) -> Repr {
-  Repr::opaque_node(name, [])
-}
-
-///|
-/// Construct an opaque wrapper `Repr` containing a literal leaf (already formatted).
-pub fn opaque_literal(name : String, value : String) -> Repr {
-  Repr::opaque_node(name, [Repr::literal(value)])
-}
-
-///|
-/// Convenience helper for “collection-like” reprs: `<name: [ ... ]>`.
-pub fn collection(name : String, contents : Array[Repr]) -> Repr {
-  opaque_child(name, Repr::array(contents))
 }
