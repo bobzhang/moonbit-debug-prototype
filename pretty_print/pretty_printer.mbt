@@ -35,6 +35,16 @@ fn[T : Show] leaf(x : T, needs_parens? : Bool = false) -> Content {
 }
 
 ///|
+/// Render any `Show` value as a leaf with a type suffix.
+fn[T : Show] leaf_with_suffix(
+  x : T,
+  suffix : String,
+  needs_parens? : Bool = false,
+) -> Content {
+  { size: 1, lines: [repr(x) + suffix], needs_parens }
+}
+
+///|
 /// Map a transformation over the lines of `ContentParens`.
 fn with_lines(
   r : ContentParens,

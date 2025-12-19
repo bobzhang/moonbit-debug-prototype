@@ -56,3 +56,65 @@ test "dict entry prints `k: v`" {
     content="{ \"a\": -1 +2 }",
   )
 }
+
+///|
+test "pretty print: Int16Lit" {
+  let pos = @repr.Repr::int16(42)
+  let neg = @repr.Repr::int16(-42)
+  inspect(pretty_print_repr_with(print_opts(), pos), content="42")
+  inspect(pretty_print_repr_with(print_opts(), neg), content="-42")
+}
+
+///|
+test "pretty print: Int64Lit" {
+  let pos = @repr.Repr::int64(1000L)
+  let neg = @repr.Repr::int64(-1000L)
+  inspect(pretty_print_repr_with(print_opts(), pos), content="1000L")
+  inspect(pretty_print_repr_with(print_opts(), neg), content="-1000L")
+}
+
+///|
+test "pretty print: UInt16Lit" {
+  let x = @repr.Repr::uint16(14)
+  inspect(pretty_print_repr_with(print_opts(), x), content="14")
+}
+
+///|
+test "pretty print: UIntLit" {
+  let x = @repr.Repr::uint(14U)
+  inspect(pretty_print_repr_with(print_opts(), x), content="14U")
+}
+
+///|
+test "pretty print: UInt64Lit" {
+  let x = @repr.Repr::uint64(14UL)
+  inspect(pretty_print_repr_with(print_opts(), x), content="14UL")
+}
+
+///|
+test "pretty print: FloatLit" {
+  let pos : Float = 3.14
+  let neg : Float = -3.14
+  inspect(
+    pretty_print_repr_with(print_opts(), @repr.Repr::float(pos)),
+    content="3.140000104904175",
+  )
+  inspect(
+    pretty_print_repr_with(print_opts(), @repr.Repr::float(neg)),
+    content="-3.140000104904175",
+  )
+}
+
+///|
+test "pretty print: BigIntLit" {
+  let pos = @repr.Repr::bigint(10000000000000000000000N)
+  let neg = @repr.Repr::bigint(-10000000000000000000000N)
+  inspect(
+    pretty_print_repr_with(print_opts(), pos),
+    content="10000000000000000000000N",
+  )
+  inspect(
+    pretty_print_repr_with(print_opts(), neg),
+    content="-10000000000000000000000N",
+  )
+}

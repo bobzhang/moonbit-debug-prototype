@@ -1,3 +1,15 @@
+// | type     | description                                       | example                    |
+// | -------- | ------------------------------------------------- | -------------------------- |
+// | `Int16`  | 16-bit signed integer                             | `(42 : Int16)`             |
+// | `Int`    | 32-bit signed integer                             | `42`                       |
+// | `Int64`  | 64-bit signed integer                             | `1000L`                    |
+// | `UInt16` | 16-bit unsigned integer                           | `(14 : UInt16)`            |
+// | `UInt`   | 32-bit unsigned integer                           | `14U`                      |
+// | `UInt64` | 64-bit unsigned integer                           | `14UL`                     |
+// | `Double` | 64-bit floating point, defined by IEEE754         | `3.14`                     |
+// | `Float`  | 32-bit floating point                             | `(3.14 : Float)`           |
+// | `BigInt` | represents numeric values larger than other types | `10000000000000000000000N` |
+
 ///|
 /// Direct structural representation for debugging/diffing/pretty-printing.
 ///
@@ -17,10 +29,24 @@
 ///   otherwise behave structurally through their children.
 pub enum Repr {
   UnitLit
-  /// Integer literal leaf.
+  /// 16-bit signed integer literal leaf.
+  Int16Lit(Int16)
+  /// 32-bit signed integer literal leaf.
   IntLit(Int)
-  /// Floating-point literal leaf.
+  /// 64-bit signed integer literal leaf.
+  Int64Lit(Int64)
+  /// 16-bit unsigned integer literal leaf.
+  UInt16Lit(UInt16)
+  /// 32-bit unsigned integer literal leaf.
+  UIntLit(UInt)
+  /// 64-bit unsigned integer literal leaf.
+  UInt64Lit(UInt64)
+  /// 64-bit floating-point literal leaf.
   DoubleLit(Double)
+  /// 32-bit floating-point literal leaf.
+  FloatLit(Float)
+  /// Big integer literal leaf.
+  BigIntLit(BigInt)
   /// Boolean literal leaf.
   BoolLit(Bool)
   /// Character literal leaf.
@@ -58,14 +84,59 @@ pub fn Repr::unit() -> Repr {
 
 ///|
 /// Smart constructors for `Repr` (constructible outside the package).
+
+///|
+/// Construct an `Int16Lit` leaf.
+pub fn Repr::int16(x : Int16) -> Repr {
+  Int16Lit(x)
+}
+
+///|
+/// Construct an `IntLit` leaf.
 pub fn Repr::int(x : Int) -> Repr {
   IntLit(x)
+}
+
+///|
+/// Construct an `Int64Lit` leaf.
+pub fn Repr::int64(x : Int64) -> Repr {
+  Int64Lit(x)
+}
+
+///|
+/// Construct a `UInt16Lit` leaf.
+pub fn Repr::uint16(x : UInt16) -> Repr {
+  UInt16Lit(x)
+}
+
+///|
+/// Construct a `UIntLit` leaf.
+pub fn Repr::uint(x : UInt) -> Repr {
+  UIntLit(x)
+}
+
+///|
+/// Construct a `UInt64Lit` leaf.
+pub fn Repr::uint64(x : UInt64) -> Repr {
+  UInt64Lit(x)
 }
 
 ///|
 /// Construct a `DoubleLit` leaf.
 pub fn Repr::double(x : Double) -> Repr {
   DoubleLit(x)
+}
+
+///|
+/// Construct a `FloatLit` leaf.
+pub fn Repr::float(x : Float) -> Repr {
+  FloatLit(x)
+}
+
+///|
+/// Construct a `BigIntLit` leaf.
+pub fn Repr::bigint(x : BigInt) -> Repr {
+  BigIntLit(x)
 }
 
 ///|
@@ -165,8 +236,15 @@ pub fn Repr::omitted() -> Repr {
 pub fn Repr::children(self : Repr) -> Array[Repr] {
   match self {
     UnitLit
+    | Int16Lit(_)
     | IntLit(_)
+    | Int64Lit(_)
+    | UInt16Lit(_)
+    | UIntLit(_)
+    | UInt64Lit(_)
     | DoubleLit(_)
+    | FloatLit(_)
+    | BigIntLit(_)
     | BoolLit(_)
     | CharLit(_)
     | StringLit(_)
@@ -193,8 +271,15 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
 pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
   match self {
     UnitLit
+    | Int16Lit(_)
     | IntLit(_)
+    | Int64Lit(_)
+    | UInt16Lit(_)
+    | UIntLit(_)
+    | UInt64Lit(_)
     | DoubleLit(_)
+    | FloatLit(_)
+    | BigIntLit(_)
     | BoolLit(_)
     | CharLit(_)
     | StringLit(_)
@@ -247,8 +332,15 @@ pub fn Repr::traverse(self : Repr, f : (Repr) -> Repr) -> Repr {
 pub fn Repr::shallow(self : Repr) -> Repr {
   match self {
     UnitLit
+    | Int16Lit(_)
     | IntLit(_)
+    | Int64Lit(_)
+    | UInt16Lit(_)
+    | UIntLit(_)
+    | UInt64Lit(_)
     | DoubleLit(_)
+    | FloatLit(_)
+    | BigIntLit(_)
     | BoolLit(_)
     | CharLit(_)
     | StringLit(_)

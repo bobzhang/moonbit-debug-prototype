@@ -187,8 +187,15 @@ fn prune_delta(
 fn info_size(info : @repr.Repr) -> Int {
   match info {
     UnitLit => 1
+    Int16Lit(_) => 1
     IntLit(_) => 1
+    Int64Lit(_) => 1
+    UInt16Lit(_) => 1
+    UIntLit(_) => 1
+    UInt64Lit(_) => 1
     DoubleLit(_) => 1
+    FloatLit(_) => 1
+    BigIntLit(_) => 1
     BoolLit(_) => 1
     CharLit(_) => 1
     StringLit(s) => if s.length() <= 15 { 1 } else { 2 }
@@ -309,11 +316,21 @@ fn pretty_print_repr_go(
 ) -> Content {
   match label {
     UnitLit => comma_seq("(", ")", [])
+    Int16Lit(x) => leaf(x, needs_parens=x < 0)
     IntLit(x) => leaf(x, needs_parens=x < 0)
+    Int64Lit(x) => leaf_with_suffix(x, "L", needs_parens=x < 0L)
+    UInt16Lit(x) => leaf(x)
+    UIntLit(x) => leaf_with_suffix(x, "U")
+    UInt64Lit(x) => leaf_with_suffix(x, "UL")
     DoubleLit(x) => {
       let needs_parens = 1.0 / x < 0.0
       leaf(x, needs_parens~)
     }
+    FloatLit(x) => {
+      let needs_parens : Bool = (1.0 : Float) / x < (0.0 : Float)
+      leaf(x, needs_parens~)
+    }
+    BigIntLit(x) => leaf_with_suffix(x, "N", needs_parens=x < 0N)
     BoolLit(x) => leaf(x)
     CharLit(x) => leaf(x)
     StringLit(x) => no_parens(verbatim(quote_string_literal(x)))
