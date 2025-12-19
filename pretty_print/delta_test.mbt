@@ -20,8 +20,14 @@ test "diff printing: arrays show per-element when some children same" {
 
 ///|
 test "diff printing: record field changes keep field name" {
-  let x = @repr.record([("a", @repr.Repr::int(1)), ("b", @repr.Repr::int(2))])
-  let y = @repr.record([("a", @repr.Repr::int(9)), ("b", @repr.Repr::int(2))])
+  let x = @repr.Repr::record({
+    "a": @repr.Repr::int(1),
+    "b": @repr.Repr::int(2),
+  })
+  let y = @repr.Repr::record({
+    "a": @repr.Repr::int(9),
+    "b": @repr.Repr::int(2),
+  })
   inspect(
     pretty_print_delta_with(print_opts(), @diff.diff_repr(x, y)),
     content="{ a: -1 +9, b: 2 }",
@@ -30,9 +36,9 @@ test "diff printing: record field changes keep field name" {
 
 ///|
 test "prune: does not count Prop as depth" {
-  let r = @repr.record([
-    ("x", @repr.ctor("A", [@repr.ctor("B", [@repr.Repr::int(1)])])),
-  ])
+  let r = @repr.Repr::record({
+    "x": @repr.ctor("A", [@repr.ctor("B", [@repr.Repr::int(1)])]),
+  })
   let opts : PrettyPrintOptions = {
     max_depth: Some(2),
     compact_threshold: 100,

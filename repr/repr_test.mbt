@@ -24,7 +24,7 @@ test "repr: with_children falls back for Prop and AssocProp" {
 
 ///|
 test "repr: record and assoc builders are structural" {
-  let r = record([("a", Repr::int(1)), ("b", Repr::bool(true))])
+  let r = @repr.Repr::record({ "a": Repr::int(1), "b": Repr::bool(true) })
   match r {
     Record([Prop("a", IntLit(1)), Prop("b", BoolLit(true))]) => ()
     _ => fail("expected record to lower into Prop children")

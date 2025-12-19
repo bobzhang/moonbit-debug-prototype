@@ -55,7 +55,7 @@ Record([
 ### Example (runnable)
 
 ```mbt test
-let r : Repr = record([("x", Repr::int(1)), ("y", Repr::string("hi"))])
+let r : Repr = @repr.Repr::record({ "x": Repr::int(1), "y": Repr::string("hi") })
 match r {
   Repr::Record(
     [Repr::Prop("x", Repr::IntLit(1)), Repr::Prop("y", Repr::StringLit("hi"))]

@@ -6,7 +6,7 @@ struct Person {
 
 ///|
 pub impl Debug for Person with debug(self) {
-  record([("name", debug(self.name)), ("age", debug(self.age))])
+  @repr.Repr::record({ "name": debug(self.name), "age": debug(self.age) })
 }
 
 ///|

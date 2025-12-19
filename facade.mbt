@@ -40,11 +40,6 @@ pub fn array(xs : Array[@repr.Repr]) -> @repr.Repr {
 }
 
 ///|
-pub fn record(fields : Array[(String, @repr.Repr)]) -> @repr.Repr {
-  @repr.record(fields)
-}
-
-///|
 pub fn ctor(name : String, args : Array[@repr.Repr]) -> @repr.Repr {
   @repr.ctor(name, args)
 }

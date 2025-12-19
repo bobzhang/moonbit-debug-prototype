@@ -5,18 +5,15 @@ fn print_opts() -> PrettyPrintOptions {
 
 ///|
 test "docs: building Repr manually" {
-  let r = @repr.record([
-    ("answer", @repr.Repr::int(42)),
-    (
-      "xs",
-      @repr.Repr::array([
-        @repr.Repr::int(1),
-        @repr.Repr::int(2),
-        @repr.Repr::int(3),
-      ]),
-    ),
-    ("tag", @repr.Repr::ctor("Ok", [@repr.Repr::string("done")])),
-  ])
+  let r = @repr.Repr::record({
+    "answer": @repr.Repr::int(42),
+    "xs": @repr.Repr::array([
+      @repr.Repr::int(1),
+      @repr.Repr::int(2),
+      @repr.Repr::int(3),
+    ]),
+    "tag": @repr.Repr::ctor("Ok", [@repr.Repr::string("done")]),
+  })
   inspect(
     pretty_print_repr_with(print_opts(), r),
     content="{ answer: 42, xs: [ 1, 2, 3 ], tag: Ok(\"done\") }",
@@ -25,12 +22,12 @@ test "docs: building Repr manually" {
 
 ///|
 test "docs: record keys are quoted when needed" {
-  let r = @repr.record([
-    ("snake_case_ok", @repr.Repr::int(1)),
-    ("with space", @repr.Repr::int(2)),
-    ("k-v", @repr.Repr::int(3)),
-    ("CamelCase", @repr.Repr::int(4)),
-  ])
+  let r = @repr.Repr::record({
+    "snake_case_ok": @repr.Repr::int(1),
+    "with space": @repr.Repr::int(2),
+    "k-v": @repr.Repr::int(3),
+    "CamelCase": @repr.Repr::int(4),
+  })
   inspect(
     pretty_print_repr_with(print_opts(), r),
     content="{ snake_case_ok: 1, \"with space\": 2, \"k-v\": 3, \"CamelCase\": 4 }",

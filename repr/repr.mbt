@@ -95,11 +95,8 @@ pub fn Repr::array(children : Array[Repr]) -> Repr {
 
 ///|
 /// Construct a `Record` node from pre-built child `Repr`s.
-///
-/// Prefer `record([("k", v), ...])` when you have name/value pairs; it ensures
-/// the `Record([Prop(..), ...])` convention.
-pub fn Repr::record(children : Array[Repr]) -> Repr {
-  Record(children)
+pub fn Repr::record(fields : Map[String, Repr]) -> Repr {
+  Record(fields.to_array().map(fn(p) { Repr::Prop(p.0, p.1) }))
 }
 
 ///|
@@ -251,21 +248,6 @@ pub fn Repr::shallow(self : Repr) -> Repr {
 /// Construct a unit `Repr` (`()`).
 pub fn unit() -> Repr {
   Repr::UnitLit
-}
-
-///|
-/// Convert record field pairs into property nodes.
-fn make_props(fields : Array[(String, Repr)]) -> Array[Repr] {
-  fields.map(fn(field) {
-    let (name, value) = field
-    Repr::prop(name, value)
-  })
-}
-
-///|
-/// Construct a record `Repr` from field name/value pairs.
-pub fn record(fields : Array[(String, Repr)]) -> Repr {
-  Repr::record(make_props(fields))
 }
 
 ///|

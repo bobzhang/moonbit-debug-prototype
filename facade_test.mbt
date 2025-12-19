@@ -21,7 +21,10 @@ test "facade: Repr constructors pretty-print as expected" {
     content="[ 1, 2 ]",
   )
   inspect(
-    pretty_print_repr_with(opts, record([("a", int(1)), ("b", int(2))])),
+    pretty_print_repr_with(
+      opts,
+      @repr.Repr::record({ "a": int(1), "b": int(2) }),
+    ),
     content="{ a: 1, b: 2 }",
   )
   inspect(
@@ -60,8 +63,8 @@ test "facade: Repr constructors pretty-print as expected" {
 ///|
 test "facade: diff + pretty_print_delta wrappers round-trip" {
   let opts = opts_no_ansi()
-  let x = record([("a", int(1))])
-  let y = record([("a", int(2))])
+  let x = @repr.Repr::record({ "a": int(1) })
+  let y = @repr.Repr::record({ "a": int(2) })
   let d = diff_repr(x, y)
   inspect(pretty_print_delta_with(opts, d), content="{ a: -1 +2 }")
 }

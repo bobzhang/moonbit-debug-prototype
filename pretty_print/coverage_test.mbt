@@ -22,7 +22,7 @@ test "pretty_print: opaque with children compacts to one line" {
 ///|
 test "pretty_print: empty record key is quoted" {
   let opts = opts_no_ansi()
-  let r = @repr.record([("", @repr.Repr::int(0))])
+  let r = @repr.Repr::record({ "": @repr.Repr::int(0) })
   inspect(pretty_print_repr_with(opts, r), content="{ \"\": 0 }")
 }
 
