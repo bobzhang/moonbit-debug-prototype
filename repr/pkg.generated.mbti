@@ -59,19 +59,19 @@ pub fn Repr::arg(String, Self) -> Self
 pub fn Repr::array(Array[Self]) -> Self
 pub fn Repr::assoc(String, Array[Self]) -> Self
 pub fn Repr::assoc_prop(Self, Self) -> Self
-pub fn Repr::bool_lit(Bool) -> Self
-pub fn Repr::char_lit(Char) -> Self
+pub fn Repr::bool(Bool) -> Self
+pub fn Repr::char(Char) -> Self
 pub fn Repr::children(Self) -> Array[Self]
 pub fn Repr::ctor(String, Array[Self]) -> Self
-pub fn Repr::double_lit(Double) -> Self
-pub fn Repr::int_lit(Int) -> Self
+pub fn Repr::double(Double) -> Self
+pub fn Repr::int(Int) -> Self
 pub fn Repr::literal(String) -> Self
 pub fn Repr::omitted() -> Self
 pub fn Repr::opaque_node(String, Array[Self]) -> Self
 pub fn Repr::prop(String, Self) -> Self
 pub fn Repr::record(Array[Self]) -> Self
 pub fn Repr::shallow(Self) -> Self
-pub fn Repr::string_lit(String) -> Self
+pub fn Repr::string(String) -> Self
 pub fn Repr::tuple(Array[Self]) -> Self
 pub fn Repr::with_children(Self, Array[Self]) -> Self
 pub impl Compare for Repr

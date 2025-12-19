@@ -1,32 +1,32 @@
 ///|
 /// Repr constructors (forwarded to `@repr`).
 pub fn int(x : Int) -> @repr.Repr {
-  @repr.int(x)
+  @repr.Repr::int(x)
 }
 
 ///|
 pub fn double(x : Double) -> @repr.Repr {
-  @repr.double(x)
+  @repr.Repr::double(x)
 }
 
 ///|
 pub fn bool(x : Bool) -> @repr.Repr {
-  @repr.bool(x)
+  @repr.Repr::bool(x)
 }
 
 ///|
 pub fn char(x : Char) -> @repr.Repr {
-  @repr.char(x)
+  @repr.Repr::char(x)
 }
 
 ///|
 pub fn string(x : String) -> @repr.Repr {
-  @repr.string(x)
+  @repr.Repr::string(x)
 }
 
 ///|
 pub fn tuple(xs : Array[@repr.Repr]) -> @repr.Repr {
-  @repr.tuple(xs)
+  @repr.Repr::tuple(xs)
 }
 
 ///|
@@ -36,7 +36,7 @@ pub fn unit() -> @repr.Repr {
 
 ///|
 pub fn array(xs : Array[@repr.Repr]) -> @repr.Repr {
-  @repr.array(xs)
+  @repr.Repr::array(xs)
 }
 
 ///|

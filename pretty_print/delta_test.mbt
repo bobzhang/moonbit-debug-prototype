@@ -1,7 +1,7 @@
 ///|
 test "diff printing: arrays collapse when all children differ" {
-  let x = @repr.array([@repr.int(1), @repr.int(2)])
-  let y = @repr.array([@repr.int(3), @repr.int(4)])
+  let x = @repr.Repr::array([@repr.Repr::int(1), @repr.Repr::int(2)])
+  let y = @repr.Repr::array([@repr.Repr::int(3), @repr.Repr::int(4)])
   inspect(
     pretty_print_delta_with(print_opts(), @diff.diff_repr(x, y)),
     content="-[ 1, 2 ] +[ 3, 4 ]",
@@ -10,8 +10,8 @@ test "diff printing: arrays collapse when all children differ" {
 
 ///|
 test "diff printing: arrays show per-element when some children same" {
-  let x = @repr.array([@repr.int(1), @repr.int(2)])
-  let y = @repr.array([@repr.int(1), @repr.int(3)])
+  let x = @repr.Repr::array([@repr.Repr::int(1), @repr.Repr::int(2)])
+  let y = @repr.Repr::array([@repr.Repr::int(1), @repr.Repr::int(3)])
   inspect(
     pretty_print_delta_with(print_opts(), @diff.diff_repr(x, y)),
     content="[ 1, -2 +3 ]",
@@ -20,8 +20,8 @@ test "diff printing: arrays show per-element when some children same" {
 
 ///|
 test "diff printing: record field changes keep field name" {
-  let x = @repr.record([("a", @repr.int(1)), ("b", @repr.int(2))])
-  let y = @repr.record([("a", @repr.int(9)), ("b", @repr.int(2))])
+  let x = @repr.record([("a", @repr.Repr::int(1)), ("b", @repr.Repr::int(2))])
+  let y = @repr.record([("a", @repr.Repr::int(9)), ("b", @repr.Repr::int(2))])
   inspect(
     pretty_print_delta_with(print_opts(), @diff.diff_repr(x, y)),
     content="{ a: -1 +9, b: 2 }",
@@ -31,7 +31,7 @@ test "diff printing: record field changes keep field name" {
 ///|
 test "prune: does not count Prop as depth" {
   let r = @repr.record([
-    ("x", @repr.ctor("A", [@repr.ctor("B", [@repr.int(1)])])),
+    ("x", @repr.ctor("A", [@repr.ctor("B", [@repr.Repr::int(1)])])),
   ])
   let opts : PrettyPrintOptions = {
     max_depth: Some(2),
@@ -43,8 +43,8 @@ test "prune: does not count Prop as depth" {
 
 ///|
 test "assoc prop prints `k: v`" {
-  let x = @repr.assoc("Map", [(@repr.string("a"), @repr.int(1))])
-  let y = @repr.assoc("Map", [(@repr.string("a"), @repr.int(2))])
+  let x = @repr.assoc("Map", [(@repr.Repr::string("a"), @repr.Repr::int(1))])
+  let y = @repr.assoc("Map", [(@repr.Repr::string("a"), @repr.Repr::int(2))])
   inspect(
     pretty_print_delta_with(print_opts(), @diff.diff_repr(x, y)),
     content="<Map: { \"a\": -1 +2 }>",

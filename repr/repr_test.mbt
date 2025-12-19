@@ -1,8 +1,8 @@
 ///|
 test "repr: with_children preserves leaves" {
-  let x = Repr::int_lit(1)
+  let x = Repr::int(1)
   assert_eq(Repr::children(x).length(), 0)
-  match Repr::with_children(x, [Repr::int_lit(2)]) {
+  match Repr::with_children(x, [Repr::int(2)]) {
     IntLit(1) => ()
     _ => fail("expected leaf to ignore new children")
   }
@@ -10,13 +10,13 @@ test "repr: with_children preserves leaves" {
 
 ///|
 test "repr: with_children falls back for Prop and AssocProp" {
-  let p = Repr::prop("k", Repr::int_lit(1))
+  let p = Repr::prop("k", Repr::int(1))
   match Repr::with_children(p, []) {
     Prop("k", Omitted) => ()
     _ => fail("expected Prop(_, Omitted) fallback")
   }
-  let ap = Repr::assoc_prop(Repr::string_lit("k"), Repr::int_lit(1))
-  match Repr::with_children(ap, [Repr::int_lit(0)]) {
+  let ap = Repr::assoc_prop(Repr::string("k"), Repr::int(1))
+  match Repr::with_children(ap, [Repr::int(0)]) {
     AssocProp(Omitted, Omitted) => ()
     _ => fail("expected AssocProp(Omitted, Omitted) fallback")
   }
@@ -24,12 +24,12 @@ test "repr: with_children falls back for Prop and AssocProp" {
 
 ///|
 test "repr: record and assoc builders are structural" {
-  let r = record([("a", int(1)), ("b", bool(true))])
+  let r = record([("a", Repr::int(1)), ("b", Repr::bool(true))])
   match r {
     Record([Prop("a", IntLit(1)), Prop("b", BoolLit(true))]) => ()
     _ => fail("expected record to lower into Prop children")
   }
-  let m = assoc("Map", [(string("a"), int(1))])
+  let m = assoc("Map", [(Repr::string("a"), Repr::int(1))])
   match m {
     Assoc("Map", [AssocProp(StringLit("a"), IntLit(1))]) => ()
     _ => fail("expected assoc to lower into AssocProp children")

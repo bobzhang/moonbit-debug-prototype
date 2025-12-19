@@ -35,10 +35,7 @@ using @repr {type Repr}
 test "prop bad cases" {
   let elem = Repr::prop(
     "x",
-    Repr::arg(
-      "y",
-      Repr::assoc_prop(Repr::string_lit("key"), Repr::bool_lit(true)),
-    ),
+    Repr::arg("y", Repr::assoc_prop(Repr::string("key"), Repr::bool(true))),
   )
   let repr = @repr.Repr::array([elem, elem, elem, elem])
   inspect(

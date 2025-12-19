@@ -52,31 +52,31 @@ pub enum Repr {
 
 ///|
 /// Smart constructors for `Repr` (constructible outside the package).
-pub fn Repr::int_lit(x : Int) -> Repr {
+pub fn Repr::int(x : Int) -> Repr {
   IntLit(x)
 }
 
 ///|
 /// Construct a `DoubleLit` leaf.
-pub fn Repr::double_lit(x : Double) -> Repr {
+pub fn Repr::double(x : Double) -> Repr {
   DoubleLit(x)
 }
 
 ///|
 /// Construct a `BoolLit` leaf.
-pub fn Repr::bool_lit(x : Bool) -> Repr {
+pub fn Repr::bool(x : Bool) -> Repr {
   BoolLit(x)
 }
 
 ///|
 /// Construct a `CharLit` leaf.
-pub fn Repr::char_lit(x : Char) -> Repr {
+pub fn Repr::char(x : Char) -> Repr {
   CharLit(x)
 }
 
 ///|
 /// Construct a `StringLit` leaf.
-pub fn Repr::string_lit(x : String) -> Repr {
+pub fn Repr::string(x : String) -> Repr {
   StringLit(x)
 }
 
@@ -244,51 +244,9 @@ pub fn Repr::shallow(self : Repr) -> Repr {
 }
 
 ///|
-/// Construct an integer `Repr`.
-pub fn int(x : Int) -> Repr {
-  Repr::int_lit(x)
-}
-
-///|
-/// Construct a double `Repr`.
-pub fn double(x : Double) -> Repr {
-  Repr::double_lit(x)
-}
-
-///|
-/// Construct a boolean `Repr`.
-pub fn bool(x : Bool) -> Repr {
-  Repr::bool_lit(x)
-}
-
-///|
-/// Construct a char `Repr`.
-pub fn char(x : Char) -> Repr {
-  Repr::char_lit(x)
-}
-
-///|
-/// Construct a string `Repr`.
-pub fn string(x : String) -> Repr {
-  Repr::string_lit(x)
-}
-
-///|
-/// Construct a tuple `Repr` from pre-built child `Repr`s.
-pub fn tuple(xs : Array[Repr]) -> Repr {
-  Repr::tuple(xs)
-}
-
-///|
 /// Construct a unit `Repr` (`()`).
 pub fn unit() -> Repr {
-  tuple([])
-}
-
-///|
-/// Construct an array `Repr` from pre-built child `Repr`s.
-pub fn array(xs : Array[Repr]) -> Repr {
-  Repr::array(xs)
+  Repr::tuple([])
 }
 
 ///|
@@ -339,7 +297,7 @@ pub fn opaque_literal(name : String, value : String) -> Repr {
 ///|
 /// Convenience helper for “collection-like” reprs: `<name: [ ... ]>`.
 pub fn collection(name : String, contents : Array[Repr]) -> Repr {
-  opaque_child(name, array(contents))
+  opaque_child(name, Repr::array(contents))
 }
 
 ///|

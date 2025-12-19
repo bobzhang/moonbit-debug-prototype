@@ -55,7 +55,7 @@ Record([
 ### Example (runnable)
 
 ```mbt test
-let r : Repr = record([("x", int(1)), ("y", string("hi"))])
+let r : Repr = record([("x", Repr::int(1)), ("y", Repr::string("hi"))])
 match r {
   Repr::Record(
     [Repr::Prop("x", Repr::IntLit(1)), Repr::Prop("y", Repr::StringLit("hi"))]
@@ -77,7 +77,7 @@ Unit is the empty tuple:
 ### Example (runnable)
 
 ```mbt test
-let t : Repr = tuple([int(1), string("x")])
+let t : Repr = Repr::tuple([Repr::int(1), Repr::string("x")])
 match t {
   Repr::Tuple([Repr::IntLit(1), Repr::StringLit("x")]) => ()
   _ => fail("unexpected Repr shape for tuple (Int, String)")
@@ -97,7 +97,10 @@ of `Ctor`:
 ### Example (runnable)
 
 ```mbt test
-let r : Repr = ctor("A", [arg("x", int(1)), arg("y", string("hi"))])
+let r : Repr = Repr::ctor("A", [
+  Repr::arg("x", Repr::int(1)),
+  Repr::arg("y", Repr::string("hi")),
+])
 match r {
   Repr::Ctor(
     "A",

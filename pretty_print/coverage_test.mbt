@@ -22,7 +22,7 @@ test "pretty_print: opaque with children compacts to one line" {
 ///|
 test "pretty_print: empty record key is quoted" {
   let opts = opts_no_ansi()
-  let r = @repr.record([("", @repr.int(0))])
+  let r = @repr.record([("", @repr.Repr::int(0))])
   inspect(pretty_print_repr_with(opts, r), content="{ \"\": 0 }")
 }
 
@@ -33,7 +33,7 @@ test "pretty_print: long string affects layout sizing" {
     compact_threshold: 2,
     use_ansi: false,
   }
-  let r = @repr.array([@repr.string("0123456789abcdef")])
+  let r = @repr.Repr::array([@repr.Repr::string("0123456789abcdef")])
   inspect(pretty_print_repr_with(opts, r), content="[ \"0123456789abcdef\" ]")
 }
 
@@ -44,8 +44,12 @@ test "pretty_print: prune_delta replaces deep differences with omitted" {
     compact_threshold: 100,
     use_ansi: false,
   }
-  let x = @repr.array([@repr.array([@repr.int(1), @repr.int(2)])])
-  let y = @repr.array([@repr.array([@repr.int(1), @repr.int(3)])])
+  let x = @repr.Repr::array([
+    @repr.Repr::array([@repr.Repr::int(1), @repr.Repr::int(2)]),
+  ])
+  let y = @repr.Repr::array([
+    @repr.Repr::array([@repr.Repr::int(1), @repr.Repr::int(3)]),
+  ])
   inspect(
     pretty_print_delta_with(opts, @diff.diff_repr(x, y)),
     content="[ ... ]",
