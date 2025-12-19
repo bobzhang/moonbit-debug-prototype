@@ -98,13 +98,16 @@ of `Ctor` :
 
 ```mbt test
 let r : Repr = Repr::ctor("A", [
-  Repr::arg("x", Repr::int(1)),
-  Repr::arg("y", Repr::string("hi")),
+  Repr::labeled("x", Repr::int(1)),
+  Repr::labeled("y", Repr::string("hi")),
 ])
 match r {
   Repr::Ctor(
     "A",
-    [Repr::Arg("x", Repr::IntLit(1)), Repr::Arg("y", Repr::StringLit("hi"))]
+    [
+      Repr::Labeled("x", Repr::IntLit(1)),
+      Repr::Labeled("y", Repr::StringLit("hi")),
+    ]
   ) => ()
   _ => fail("unexpected Repr shape for labeled ctor A(x=Int, y=String)")
 }

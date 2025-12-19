@@ -30,15 +30,14 @@ pub enum Repr {
   Array(Array[Repr])
   Record(Array[Repr])
   Field(String, Repr)
-  Arg(String, Repr)
   Ctor(String, Array[Repr])
+  Labeled(String, Repr)
   Opaque(String, Array[Repr])
   Literal(String)
   Dict(Array[Repr])
   Entry(Repr, Repr)
   Omitted
 }
-pub fn Repr::arg(String, Self) -> Self
 pub fn Repr::array(Array[Self]) -> Self
 pub fn Repr::bool(Bool) -> Self
 pub fn Repr::char(Char) -> Self
@@ -49,6 +48,7 @@ pub fn Repr::double(Double) -> Self
 pub fn Repr::entry(Self, Self) -> Self
 pub fn Repr::field(String, Self) -> Self
 pub fn Repr::int(Int) -> Self
+pub fn Repr::labeled(String, Self) -> Self
 pub fn Repr::literal(String) -> Self
 pub fn Repr::omitted() -> Self
 pub fn Repr::opaque_node(String, Array[Self]) -> Self

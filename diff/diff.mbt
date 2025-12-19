@@ -90,7 +90,7 @@ fn info_approx_eq(
     (Array(_), Array(_)) => true
     (Record(_), Record(_)) => true
     (Field(n1, _), Field(n2, _)) => n1 == n2
-    (Arg(n1, _), Arg(n2, _)) => n1 == n2
+    (Labeled(n1, _), Labeled(n2, _)) => n1 == n2
     (Ctor(n1, _), Ctor(n2, _)) => n1 == n2
     (Opaque(n1, _), Opaque(n2, _)) => n1 == n2
     (Dict(_), Dict(_)) => true

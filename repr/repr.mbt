@@ -35,10 +35,10 @@ pub enum Repr {
   Record(Array[Repr])
   /// Record field node. Conventionally appears only under `Record`.
   Field(String, Repr)
-  /// Labeled argument node. Conventionally appears only under `Ctor`.
-  Arg(String, Repr)
   /// Constructor/application node: `Ctor(name, args)`.
   Ctor(String, Array[Repr])
+  /// Labeled argument node. Conventionally appears only under `Ctor`.
+  Labeled(String, Repr)
   /// Opaque wrapper node: prints as `<name>` or `<name: ...>` and keeps children.
   Opaque(String, Array[Repr])
   /// Pre-rendered leaf string (already formatted, no quoting/escaping applied).
@@ -107,8 +107,8 @@ pub fn Repr::field(name : String, value : Repr) -> Repr {
 
 ///|
 /// Construct a `Arg(label, value)` labeled constructor argument node.
-pub fn Repr::arg(label : String, value : Repr) -> Repr {
-  Arg(label, value)
+pub fn Repr::labeled(label : String, value : Repr) -> Repr {
+  Labeled(label, value)
 }
 
 ///|
@@ -173,7 +173,7 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
     | Ctor(_, xs)
     | Opaque(_, xs)
     | Dict(xs) => xs
-    Field(_, value) | Arg(_, value) => [value]
+    Field(_, value) | Labeled(_, value) => [value]
     Entry(key, value) => [key, value]
   }
 }
@@ -206,10 +206,10 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
         [value] => Field(name, value)
         _ => Field(name, Omitted)
       }
-    Arg(label, _) =>
+    Labeled(label, _) =>
       match children {
-        [value] => Arg(label, value)
-        _ => Arg(label, Omitted)
+        [value] => Labeled(label, value)
+        _ => Labeled(label, Omitted)
       }
     Entry(_, _) =>
       match children {
@@ -241,7 +241,7 @@ pub fn Repr::shallow(self : Repr) -> Repr {
     Opaque(name, _) => Opaque(name, [])
     Dict(_) => Dict([])
     Field(name, _) => Field(name, Omitted)
-    Arg(label, _) => Arg(label, Omitted)
+    Labeled(label, _) => Labeled(label, Omitted)
     Entry(_, _) => Entry(Omitted, Omitted)
   }
 }
@@ -261,7 +261,7 @@ pub fn ctor(name : String, args : Array[Repr]) -> Repr {
 ///|
 /// Construct a labeled argument node.
 pub fn arg(label : String, value : Repr) -> Repr {
-  Repr::arg(label, value)
+  Repr::labeled(label, value)
 }
 
 ///|
