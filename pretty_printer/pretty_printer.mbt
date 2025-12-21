@@ -1,5 +1,6 @@
 ///|
-/// Rendered content with line layout and paren preference.
+/// Rendered content with line layout and a paren hint for embedding.
+/// `needs_parens` is metadata only; callers decide whether to wrap.
 pub struct Content {
   size : Int
   lines : Array[String]
@@ -9,43 +10,49 @@ pub struct Content {
 ///|
 
 ///|
-/// Rendered content without paren preference metadata.
+/// Layout-only content without paren metadata.
+/// Use this for line transforms/concatenation, then choose `parens` or
+/// `no_parens` when embedding into a parent node.
 pub struct ContentParens {
   size : Int
   lines : Array[String]
 } derive(Show, Eq)
 
 ///|
+/// Concatenate two layout blocks and add their sizes.
 pub impl Add for ContentParens with add(self, other) {
   { size: self.size + other.size, lines: self.lines + other.lines }
 }
 
 ///|
-/// Empty content value.
+/// Empty content value (size 0, no paren hint).
 pub fn empty_content() -> Content {
   { size: 0, lines: [], needs_parens: false }
 }
 
 ///|
-/// Single literal token as a `ContentParens`.
+/// Single literal token as a `ContentParens` (size 1).
 pub fn verbatim(x : String) -> ContentParens {
   { size: 1, lines: [x] }
 }
 
 ///|
 /// Build a `ContentParens` from explicit size and lines.
+/// `size` is a heuristic used for compact-vs-multiline decisions.
 pub fn content_parens(size : Int, lines : Array[String]) -> ContentParens {
   { size, lines }
 }
 
 ///|
 /// Render any `Show` value as a leaf content node.
+/// `needs_parens` is a hint for callers, not an automatic wrapper.
 pub fn[T : Show] leaf(x : T, needs_parens? : Bool = false) -> Content {
   { size: 1, lines: [repr(x)], needs_parens }
 }
 
 ///|
 /// Render any `Show` value as a leaf with a type suffix.
+/// `needs_parens` is a hint for callers, not an automatic wrapper.
 pub fn[T : Show] leaf_with_suffix(
   x : T,
   suffix : String,
@@ -56,6 +63,7 @@ pub fn[T : Show] leaf_with_suffix(
 
 ///|
 /// Map a transformation over the lines of `ContentParens`.
+/// The size is preserved.
 fn with_lines(
   r : ContentParens,
   f : (Array[String]) -> Array[String],
@@ -65,6 +73,7 @@ fn with_lines(
 
 ///|
 /// Map a transformation over the lines of `Content`.
+/// The size and paren hint are preserved.
 fn Content::with_lines_content(
   r : Content,
   f : (Array[String]) -> Array[String],
@@ -102,19 +111,21 @@ pub fn surround(
 }
 
 ///|
-/// Convert `Content` to `ContentParens` without adding parentheses.
+/// Convert `Content` to `ContentParens` and drop the paren hint.
 pub fn Content::no_wrap(c : Content) -> ContentParens {
   { size: c.size, lines: c.lines }
 }
 
 ///|
 /// Mark a content chunk as needing parentheses when embedded.
+/// This sets metadata only; it does not change the lines.
 pub fn parens(r : ContentParens) -> Content {
   { size: r.size, lines: r.lines, needs_parens: true }
 }
 
 ///|
 /// Mark a content chunk as not needing parentheses when embedded.
+/// This sets metadata only; it does not change the lines.
 pub fn no_parens(r : ContentParens) -> Content {
   { size: r.size, lines: r.lines, needs_parens: false }
 }
@@ -141,7 +152,7 @@ fn compact_lines(lines : Array[String]) -> Array[String] {
 }
 
 ///|
-/// Compact a `Content` value.
+/// Compact a `Content` value (paren hint preserved).
 pub fn Content::compact(r : Content) -> Content {
   r.with_lines_content(compact_lines)
 }
@@ -184,6 +195,7 @@ fn comma_seq_lines(
 
 ///|
 /// Build a comma-separated sequence as `Content`.
+/// The result has `needs_parens = false`; wrap explicitly if needed.
 pub fn comma_seq(
   begin : String,
   end : String,
@@ -202,12 +214,13 @@ pub fn comma_seq(
 
 ///|
 /// Convert content into a final `String` with newline separators.
+/// Resolve paren hints before calling this (often via `no_wrap`).
 pub fn print_content(r : ContentParens) -> String {
   r.lines.join("\n"[:])
 }
 
 ///|
-/// Total “size” of a node (root + children), used for compact decisions.
+/// Total size of a node (root + children), used for compact decisions.
 pub fn measure(root_size : Int, children : Array[Content]) -> Int {
   let mut total = root_size
   for c in children {

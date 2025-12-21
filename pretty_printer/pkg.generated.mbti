@@ -4,8 +4,6 @@ package "dii_user/moonbit_debugged/pretty_printer"
 // Values
 pub fn comma_seq(String, String, Array[ContentParens]) -> Content
 
-pub fn compact(Content) -> Content
-
 pub fn content_parens(Int, Array[String]) -> ContentParens
 
 pub fn empty_content() -> Content
@@ -19,8 +17,6 @@ pub fn[T : Show] leaf_with_suffix(T, String, needs_parens? : Bool) -> Content
 pub fn measure(Int, Array[Content]) -> Int
 
 pub fn no_parens(ContentParens) -> Content
-
-pub fn no_wrap(Content) -> ContentParens
 
 pub fn parens(ContentParens) -> Content
 
@@ -40,6 +36,8 @@ pub struct Content {
   lines : Array[String]
   needs_parens : Bool
 }
+pub fn Content::compact(Self) -> Self
+pub fn Content::no_wrap(Self) -> ContentParens
 pub impl Eq for Content
 pub impl Show for Content
 
