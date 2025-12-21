@@ -18,30 +18,9 @@ pub let default_pretty_print_options : PrettyPrintOptions = {
 /// Whether visiting this node should decrement the remaining depth budget.
 fn info_adds_depth(info : @repr.Repr) -> Bool {
   match info {
-    Field(_, _) | Labeled(_, _) | Entry(_, _) => false
+    RecordField(_, _) | EnumLabeledArg(_, _) | MapEntry(_, _) => false
     _ => true
   }
-}
-
-///|
-/// Child nodes of a `Repr` node.
-fn info_children(info : @repr.Repr) -> Array[@repr.Repr] {
-  info.children()
-}
-
-///|
-/// Rebuild a `Repr` node with a new child list (payload is preserved).
-fn info_with_children(
-  info : @repr.Repr,
-  children : Array[@repr.Repr],
-) -> @repr.Repr {
-  info.with_children(children)
-}
-
-///|
-/// A shallow copy of `info` containing only its “label” (children replaced).
-fn info_shallow(info : @repr.Repr) -> @repr.Repr {
-  info.shallow()
 }
 
 ///|
@@ -61,12 +40,12 @@ fn prune_info(
   }
 
   fn go(d : Int, node : @repr.Repr) -> @repr.Repr {
-    let children = info_children(node)
+    let children = node.children()
     if d <= 0 {
       if children.is_empty() {
         node
       } else if !counts(node) {
-        info_with_children(node, children.map(fn(child) { go(d, child) }))
+        node.with_children(children.map(fn(child) { go(d, child) }))
       } else {
         replacement
       }
@@ -74,10 +53,7 @@ fn prune_info(
       node
     } else {
       let next_depth = if counts(node) { d - 1 } else { d }
-      info_with_children(
-        node,
-        children.map(fn(child) { go(next_depth, child) }),
-      )
+      node.with_children(children.map(fn(child) { go(next_depth, child) }))
     }
   }
 
@@ -202,13 +178,13 @@ fn info_size(info : @repr.Repr) -> Int {
     Tuple(_) => 1
     Array(_) => 1
     Record(_) => 2
-    Field(name, _) => if name.length() <= 15 { 0 } else { 1 }
-    Labeled(name, _) => if name.length() <= 15 { 0 } else { 1 }
-    Ctor(name, _) => if name.length() <= 15 { 1 } else { 2 }
+    RecordField(name, _) => if name.length() <= 15 { 0 } else { 1 }
+    EnumLabeledArg(name, _) => if name.length() <= 15 { 0 } else { 1 }
+    Enum(name, _) => if name.length() <= 15 { 1 } else { 2 }
     Opaque(name, _) => if name.length() <= 15 { 1 } else { 2 }
     Literal(s) => if s.length() <= 15 { 1 } else { 2 }
-    Dict(_) => 2
-    Entry(_, _) => 0
+    Map(_) => 2
+    MapEntry(_, _) => 0
     Omitted => 0
   }
 }
@@ -335,7 +311,7 @@ fn pretty_print_repr_go(
     CharLit(x) => leaf(x)
     StringLit(x) => no_parens(verbatim(quote_string_literal(x)))
     Tuple(_) => comma_seq("(", ")", children.map(no_wrap))
-    Ctor(name, _) =>
+    Enum(name, _) =>
       match children {
         [] => no_parens(verbatim(name))
         _ =>
@@ -356,13 +332,13 @@ fn pretty_print_repr_go(
         no_parens(surround("<", ">", body))
       }
     Literal(str) => no_parens(verbatim(str))
-    Dict(_) => comma_seq("{ ", " }", children.map(no_wrap))
-    Entry(_, _) =>
+    Map(_) => comma_seq("{ ", " }", children.map(no_wrap))
+    MapEntry(_, _) =>
       match children {
         [key, val] => no_parens(surround("", ":", no_wrap(key)) + no_wrap(val))
         _ => empty_content()
       }
-    Labeled(name, _) =>
+    EnumLabeledArg(name, _) =>
       match children {
         [val] =>
           match val.lines {
@@ -380,7 +356,7 @@ fn pretty_print_repr_go(
           }
         _ => empty_content()
       }
-    Field(name, _) =>
+    RecordField(name, _) =>
       match children {
         [val] =>
           no_parens(
@@ -434,8 +410,8 @@ fn mark_removed(opts : PrettyPrintOptions, x : ContentParens) -> ContentParens {
 ///|
 /// Render a `Repr` as `Content` with resizing decisions.
 fn render_repr(opts : PrettyPrintOptions, info : @repr.Repr) -> Content {
-  let label = info_shallow(info)
-  let children = info_children(info).map(fn(child) { render_repr(opts, child) })
+  let label = info.shallow()
+  let children = info.children().map(fn(child) { render_repr(opts, child) })
   with_resizing(
     info_size(label),
     opts.compact_threshold,

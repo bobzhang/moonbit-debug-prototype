@@ -27,13 +27,13 @@ pub enum Repr {
   Tuple(Array[Repr])
   Array(Array[Repr])
   Record(Array[Repr])
-  Field(String, Repr)
-  Ctor(String, Array[Repr])
-  Labeled(String, Repr)
+  Enum(String, Array[Repr])
+  Map(Array[Repr])
+  RecordField(String, Repr)
+  EnumLabeledArg(String, Repr)
   Opaque(String, Array[Repr])
   Literal(String)
-  Dict(Array[Repr])
-  Entry(Repr, Repr)
+  MapEntry(Repr, Repr)
   Omitted
 }
 pub fn Repr::array(Array[Self]) -> Self
@@ -41,15 +41,13 @@ pub fn Repr::bigint(@bigint.BigInt) -> Self
 pub fn Repr::bool(Bool) -> Self
 pub fn Repr::char(Char) -> Self
 pub fn Repr::children(Self) -> Array[Self]
-pub fn Repr::ctor(String, Array[Self]) -> Self
+pub fn Repr::ctor(String, Array[(String?, Self)]) -> Self
 pub fn Repr::dict(Array[(Self, Self)]) -> Self
 pub fn Repr::double(Double) -> Self
-pub fn Repr::field(String, Self) -> Self
 pub fn Repr::float(Float) -> Self
 pub fn Repr::int(Int) -> Self
 pub fn Repr::int16(Int16) -> Self
 pub fn Repr::int64(Int64) -> Self
-pub fn Repr::labeled(String, Self) -> Self
 pub fn Repr::literal(String) -> Self
 pub fn Repr::omitted() -> Self
 pub fn Repr::opaque_(String, Array[Self]) -> Self

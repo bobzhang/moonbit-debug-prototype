@@ -1,5 +1,5 @@
 ///|
-/// Re-export `Repr` type and smart constructors from `@repr`.
+/// Re-export `Repr` and smart constructors from `@repr`.
 /// Use `Repr::int(x)`, `Repr::string(s)`, etc. to construct values.
 pub using @repr {type Repr}
 

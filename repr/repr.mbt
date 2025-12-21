@@ -17,13 +17,14 @@
 /// not directly constructed. Use the smart constructors below.
 ///
 /// Design notes:
-/// - `Record` is encoded as `Record([Prop(name, value), ...])` (not as an array
+/// - `Record` is encoded as `Record([RecordField(name, value), ...])` (not as an array
 ///   of `(String, Repr)` pairs) to keep generic traversal/rewrite code simple:
 ///   every tree edge is a `Repr`, so `children/with_children`, pruning, and diff
 ///   can work uniformly across node kinds.
-/// - Labeled constructor arguments are encoded as `Ctor(name, [Arg(label, value), ...])`,
+/// - Labeled enum arguments are encoded as
+///   `Enum(name, [EnumLabeledArg(label, value), ...])`,
 ///   which supports mixing positional and labeled args.
-/// - `Dict` is encoded as `Dict([Entry(key, value), ...])`, which is
+/// - `Map` is encoded as `Map([MapEntry(key, value), ...])`, which is
 ///   intended for “map-like” collections (MoonBit map literals like `{ k: v }`).
 /// - `Opaque` is intended for “container-like” wrappers that keep a type/tag but
 ///   otherwise behave structurally through their children.
@@ -57,22 +58,22 @@ pub enum Repr {
   Tuple(Array[Repr])
   /// Array container node.
   Array(Array[Repr])
-  /// Record container node. Conventionally contains only `Prop` children.
+  /// Record container node. Conventionally contains only `RecordField` children.
   Record(Array[Repr])
+  /// Enum constructor/application node: `Enum(name, args)`.
+  Enum(String, Array[Repr])
+  /// Association/kv container for map literals.
+  Map(Array[Repr])
   /// Record field node. Conventionally appears only under `Record`.
-  Field(String, Repr)
-  /// Constructor/application node: `Ctor(name, args)`.
-  Ctor(String, Array[Repr])
-  /// Labeled argument node. Conventionally appears only under `Ctor`.
-  Labeled(String, Repr)
+  RecordField(String, Repr)
+  /// Labeled argument node. Conventionally appears only under `Enum`.
+  EnumLabeledArg(String, Repr)
   /// Opaque wrapper node: prints as `<name>` or `<name: ...>` and keeps children.
   Opaque(String, Array[Repr])
   /// Pre-rendered leaf string (already formatted, no quoting/escaping applied).
   Literal(String)
-  /// Association/kv container for map literals.
-  Dict(Array[Repr])
-  /// Key/value node. Conventionally appears only under `Dict`.
-  Entry(Repr, Repr)
+  /// Key/value node. Conventionally appears only under `Map`.
+  MapEntry(Repr, Repr)
   /// Pruned subtree marker used by depth-limited pretty-printing.
   Omitted
 } derive(Eq, Compare)
@@ -83,152 +84,20 @@ pub fn Repr::unit() -> Repr {
 }
 
 ///|
-/// Smart constructors for `Repr` (constructible outside the package).
-
-///|
-/// Construct an `Int16Lit` leaf.
-pub fn Repr::int16(x : Int16) -> Repr {
-  Int16Lit(x)
-}
-
-///|
-/// Construct an `IntLit` leaf.
-pub fn Repr::int(x : Int) -> Repr {
-  IntLit(x)
-}
-
-///|
-/// Construct an `Int64Lit` leaf.
-pub fn Repr::int64(x : Int64) -> Repr {
-  Int64Lit(x)
-}
-
-///|
-/// Construct a `UInt16Lit` leaf.
-pub fn Repr::uint16(x : UInt16) -> Repr {
-  UInt16Lit(x)
-}
-
-///|
-/// Construct a `UIntLit` leaf.
-pub fn Repr::uint(x : UInt) -> Repr {
-  UIntLit(x)
-}
-
-///|
-/// Construct a `UInt64Lit` leaf.
-pub fn Repr::uint64(x : UInt64) -> Repr {
-  UInt64Lit(x)
-}
-
-///|
-/// Construct a `DoubleLit` leaf.
-pub fn Repr::double(x : Double) -> Repr {
-  DoubleLit(x)
-}
-
-///|
-/// Construct a `FloatLit` leaf.
-pub fn Repr::float(x : Float) -> Repr {
-  FloatLit(x)
-}
-
-///|
-/// Construct a `BigIntLit` leaf.
-pub fn Repr::bigint(x : BigInt) -> Repr {
-  BigIntLit(x)
-}
-
-///|
-/// Construct a `BoolLit` leaf.
-pub fn Repr::bool(x : Bool) -> Repr {
-  BoolLit(x)
-}
-
-///|
-/// Construct a `CharLit` leaf.
-pub fn Repr::char(x : Char) -> Repr {
-  CharLit(x)
-}
-
-///|
-/// Construct a `StringLit` leaf.
-pub fn Repr::string(x : String) -> Repr {
-  StringLit(x)
-}
-
-///|
-/// Construct a `Tuple` node from pre-built child `Repr`s.
-pub fn Repr::tuple(children : Array[Repr]) -> Repr {
-  Tuple(children)
-}
-
-///|
-/// Construct an `Array` node from pre-built child `Repr`s.
-pub fn Repr::array(children : Array[Repr]) -> Repr {
-  Array(children)
-}
-
-///|
-/// Construct a `Record` node from pre-built child `Repr`s.
-pub fn Repr::record(fields : Map[String, Repr]) -> Repr {
-  Record(fields.to_array().map(fn(p) { Field(p.0, p.1) }))
-}
-
-///|
-/// Construct a `Prop(name, value)` record field node.
-pub fn Repr::field(name : String, value : Repr) -> Repr {
-  Field(name, value)
-}
-
-///|
-/// Construct a `Arg(label, value)` labeled constructor argument node.
-pub fn Repr::labeled(label : String, value : Repr) -> Repr {
-  Labeled(label, value)
-}
-
-///|
-/// Construct a `Ctor(name, args)` node.
-pub fn Repr::ctor(name : String, args : Array[Repr]) -> Repr {
-  Ctor(name, args)
-}
-
-///|
-/// Construct an `Opaque(name, children)` node.
+/// Construct an `Enum(name, args)` node for enum/constructor applications.
 ///
-/// This is useful for values where you want to keep a tag/type name but still
-/// show a structural summary through children (e.g. `<Map: {...}>`).
-pub fn Repr::opaque_(name : String, children : Array[Repr]) -> Repr {
-  Opaque(name, children)
-}
-
-///|
-/// Construct a `Literal(value)` leaf (already formatted).
-pub fn Repr::literal(value : String) -> Repr {
-  Literal(value)
-}
-
-///|
-/// Construct a `Dict` node from key/value `Repr` pairs (for map literals).
-pub fn Repr::dict(contents : Array[(Repr, Repr)]) -> Repr {
-  Dict(
-    contents.map(fn(pair) {
-      let (k, v) = pair
-      Repr::entry(k, v)
+/// Use `None` for positional arguments and `Some(label)` for labeled ones.
+pub fn Repr::ctor(name : String, args : Array[(String?, Repr)]) -> Repr {
+  Enum(
+    name,
+    args.map(fn(arg) {
+      let (label, value) = arg
+      match label {
+        None => value
+        Some(label) => Repr::labeled(label, value)
+      }
     }),
   )
-}
-
-///|
-/// Construct an `Entry(key, value)` key/value node for map literals.
-fn Repr::entry(key : Repr, value : Repr) -> Repr {
-  Entry(key, value)
-}
-
-///|
-/// Construct an `Omitted` marker node.
-pub fn Repr::omitted() -> Repr {
-  Omitted
 }
 
 ///|
@@ -236,7 +105,7 @@ pub fn Repr::omitted() -> Repr {
 ///
 /// Design notes:
 /// - Leaves return `[]`; container nodes return their stored children.
-/// - `Field`/`Labeled` have one child; `Entry` has two.
+/// - `RecordField`/`EnumLabeledArg` have one child; `MapEntry` has two.
 /// - `children` and `with_children` form a partial lens for tree rewrites:
 ///   `self.with_children(self.children()) == self`.
 pub fn Repr::children(self : Repr) -> Array[Repr] {
@@ -259,11 +128,11 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
     Tuple(xs)
     | Array(xs)
     | Record(xs)
-    | Ctor(_, xs)
+    | Enum(_, xs)
     | Opaque(_, xs)
-    | Dict(xs) => xs
-    Field(_, value) | Labeled(_, value) => [value]
-    Entry(key, value) => [key, value]
+    | Map(xs) => xs
+    RecordField(_, value) | EnumLabeledArg(_, value) => [value]
+    MapEntry(key, value) => [key, value]
   }
 }
 
@@ -272,8 +141,9 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
 ///
 /// Notes:
 /// - Leaf nodes ignore `children` and return themselves.
-/// - `Field`/`Labeled` expect exactly one child and fall back to `Omitted`.
-/// - `Entry` expects exactly two children and falls back to `Entry(Omitted, Omitted)`.
+/// - `RecordField`/`EnumLabeledArg` expect exactly one child and fall back to
+///   `RecordField(name, Omitted)`/`EnumLabeledArg(label, Omitted)`.
+/// - `MapEntry` expects exactly two children and falls back to `MapEntry(Omitted, Omitted)`.
 /// - This is intentionally not a total inverse of `children`: invalid arity is
 ///   clamped to keep the tree well-formed for generic traversal.
 pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
@@ -296,23 +166,23 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
     Tuple(_) => Tuple(children)
     Array(_) => Array(children)
     Record(_) => Record(children)
-    Ctor(name, _) => Ctor(name, children)
+    Enum(name, _) => Enum(name, children)
     Opaque(name, _) => Opaque(name, children)
-    Dict(_) => Dict(children)
-    Field(name, _) =>
+    Map(_) => Map(children)
+    RecordField(name, _) =>
       match children {
-        [value] => Field(name, value)
-        _ => Field(name, Omitted)
+        [value] => RecordField(name, value)
+        _ => RecordField(name, Omitted)
       }
-    Labeled(label, _) =>
+    EnumLabeledArg(label, _) =>
       match children {
-        [value] => Labeled(label, value)
-        _ => Labeled(label, Omitted)
+        [value] => EnumLabeledArg(label, value)
+        _ => EnumLabeledArg(label, Omitted)
       }
-    Entry(_, _) =>
+    MapEntry(_, _) =>
       match children {
-        [key, value] => Entry(key, value)
-        _ => Entry(Omitted, Omitted)
+        [key, value] => MapEntry(key, value)
+        _ => MapEntry(Omitted, Omitted)
       }
   }
 }
@@ -321,7 +191,7 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
 /// Traverse a `Repr` tree and rewrite each node with `f`.
 ///
 /// `f` runs after children are traversed (post-order), so it sees rewritten
-/// children and can hide fields by rewriting `Prop`/`Arg` nodes.
+/// children and can hide fields by rewriting `RecordField`/`EnumLabeledArg` nodes.
 pub fn Repr::traverse(self : Repr, f : (Repr) -> Repr) -> Repr {
   fn go(node : Repr) -> Repr {
     let children = node.children()
@@ -357,11 +227,11 @@ pub fn Repr::shallow(self : Repr) -> Repr {
     Tuple(_) => Tuple([])
     Array(_) => Array([])
     Record(_) => Record([])
-    Ctor(name, _) => Ctor(name, [])
+    Enum(name, _) => Enum(name, [])
     Opaque(name, _) => Opaque(name, [])
-    Dict(_) => Dict([])
-    Field(name, _) => Field(name, Omitted)
-    Labeled(label, _) => Labeled(label, Omitted)
-    Entry(_, _) => Entry(Omitted, Omitted)
+    Map(_) => Map([])
+    RecordField(name, _) => RecordField(name, Omitted)
+    EnumLabeledArg(label, _) => EnumLabeledArg(label, Omitted)
+    MapEntry(_, _) => MapEntry(Omitted, Omitted)
   }
 }

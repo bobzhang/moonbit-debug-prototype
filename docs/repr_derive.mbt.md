@@ -135,7 +135,7 @@ the inner value is an `Array` node).
 
 ## 4) Record/struct types (named fields)
 
-Use a `Record` node containing `Prop(name, value)` children:
+Use a `Record` node containing `RecordField(name, value)` children:
 
 - `struct { x : Int; y : String }` → `@repr.record([("x", ...), ("y", ...)])`
 
@@ -158,7 +158,7 @@ Notes:
 
 - Field names are printed unquoted when they are valid identifiers; otherwise
   they are printed as quoted string literals (useful for map/object-like data).
-- Record `Prop` nodes do not count towards the “depth budget” when pretty
+- Record `RecordField` nodes do not count towards the “depth budget” when pretty
   printing, so you still see the field names when values are pruned.
 
 ---
@@ -167,8 +167,8 @@ Notes:
 
 Represent enum variants as constructor applications:
 
-- `A(1, "x")` → `@repr.ctor("A", [@repr.int(1), @repr.string("x")])`
-- `D(1)` → `@repr.ctor("D", [@repr.int(1)])`
+- `A(1, "x")` → `@repr.ctor("A", [(None, @repr.int(1)), (None, @repr.string("x"))])`
+- `D(1)` → `@repr.ctor("D", [(None, @repr.int(1))])`
 - `None` (no args) → `@repr.ctor("None", [])`
 
 Example:
@@ -181,8 +181,9 @@ enum Expr {
 
 pub impl @dbg.Debug for Expr with debug(self) {
   match self {
-    Lit(n) => @dbg.ctor("Lit", [@dbg.debug(n)])
-    Add(a, b) => @dbg.ctor("Add", [@dbg.debug(a), @dbg.debug(b)])
+    Lit(n) => @dbg.ctor("Lit", [(None, @dbg.debug(n))])
+    Add(a, b) =>
+      @dbg.ctor("Add", [(None, @dbg.debug(a)), (None, @dbg.debug(b))])
   }
 }
 ```
@@ -203,19 +204,25 @@ enum LabeledValue {
 }
 ```
 
-Use `Arg(label, value)` nodes (children of `Ctor`) to preserve the labels:
+Use `ctor` with optional labels to preserve the labels:
 
-- `A(x=1, y="s")` → `ctor("A", [arg("x", int(1)), arg("y", string("s"))])`
-- `B(x=1, "s")` → `ctor("B", [arg("x", int(1)), string("s")])`
+- `A(x=1, y="s")` →
+  `@repr.ctor("A", [(Some("x"), @repr.int(1)), (Some("y"), @repr.string("s"))])`
+- `B(x=1, "s")` →
+  `@repr.ctor("B", [(Some("x"), @repr.int(1)), (None, @repr.string("s"))])`
 
 Example implementation:
 
 ```mbt
 pub impl @dbg.Debug for LabeledValue with debug(self) {
   match self {
-    A(x~, y~) => @dbg.ctor("A", [@dbg.arg("x", @dbg.debug(x)), @dbg.arg("y", @dbg.debug(y))])
-    B(x~, s) => @dbg.ctor("B", [@dbg.arg("x", @dbg.debug(x)), @dbg.debug(s)])
-    D(n) => @dbg.ctor("D", [@dbg.debug(n)])
+    A(x~, y~) =>
+      @dbg.ctor(
+        "A",
+        [(Some("x"), @dbg.debug(x)), (Some("y"), @dbg.debug(y))],
+      )
+    B(x~, s) => @dbg.ctor("B", [(Some("x"), @dbg.debug(x)), (None, @dbg.debug(s))])
+    D(n) => @dbg.ctor("D", [(None, @dbg.debug(n))])
   }
 }
 ```
@@ -224,16 +231,15 @@ pub impl @dbg.Debug for LabeledValue with debug(self) {
 
 ## 7) Map-like / association containers
 
-Use `Assoc(name, [AssocProp(key, value), ...])` for key/value collections:
+Use `Map([MapEntry(key, value), ...])` for key/value collections:
 
-- `Map[K, V]` → `@repr.assoc("Map", [(k1, v1), ...].map(debug))`
+- `Map[K, V]` → `@repr.dict([(k1, v1), ...].map(debug))`
 
 Example:
 
 ```mbt
 pub impl[K : @dbg.Debug, V : @dbg.Debug] @dbg.Debug for Map[K, V] with debug(self) {
-  @dbg.assoc(
-    "Map",
+  @dbg.dict(
     self.to_array().map(fn(kv) {
       let (k, v) = kv
       (@dbg.debug(k), @dbg.debug(v))
@@ -242,7 +248,7 @@ pub impl[K : @dbg.Debug, V : @dbg.Debug] @dbg.Debug for Map[K, V] with debug(sel
 }
 ```
 
-This prints as `<Map: { "a": 1, "b": 2 }>`.
+This prints as `{ "a": 1, "b": 2 }`.
 
 ---
 
@@ -273,12 +279,12 @@ If you implement `derive(Repr)` in the compiler, a good default mapping is:
 - tuple / unit → `Tuple([...])`
 - array-like sequences → `Array([...])` (optionally wrapped via `Opaque`/`collection`)
 - generic collection wrappers (e.g. `Collection[A]`) → add `A : Repr` constraint and map over elements
-- record structs → `Record([Prop(field, value), ...])`
-- tuple structs/newtypes → `Ctor(TypeName, [...])`
+- record structs → `Record([RecordField(field, value), ...])`
+- tuple structs/newtypes → `Enum(TypeName, [...])`
 - enum variants:
-  - positional args → `Ctor(VariantName, [...])`
-  - labeled args → `Ctor(VariantName, [Arg(label, value), ...])` (mixed allowed)
-- maps/dicts → `Assoc(TypeName, [AssocProp(key, value), ...])`
+  - positional args → `Enum(VariantName, [...])`
+  - labeled args → `Enum(VariantName, [EnumLabeledArg(label, value), ...])` (mixed allowed)
+- maps/dicts → `Map([MapEntry(key, value), ...])`
 
 For cyclic graphs (possible with `mut`/`Ref`), a derived implementation should
 also track visited nodes to avoid infinite recursion (policy choice: print
