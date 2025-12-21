@@ -167,8 +167,8 @@ Notes:
 
 Represent enum variants as constructor applications:
 
-- `A(1, "x")` → `@repr.ctor("A", [@repr.int(1), @repr.string("x")])`
-- `D(1)` → `@repr.ctor("D", [@repr.int(1)])`
+- `A(1, "x")` → `@repr.ctor("A", [(None, @repr.int(1)), (None, @repr.string("x"))])`
+- `D(1)` → `@repr.ctor("D", [(None, @repr.int(1))])`
 - `None` (no args) → `@repr.ctor("None", [])`
 
 Example:
@@ -181,8 +181,9 @@ enum Expr {
 
 pub impl @dbg.Debug for Expr with debug(self) {
   match self {
-    Lit(n) => @dbg.ctor("Lit", [@dbg.debug(n)])
-    Add(a, b) => @dbg.ctor("Add", [@dbg.debug(a), @dbg.debug(b)])
+    Lit(n) => @dbg.ctor("Lit", [(None, @dbg.debug(n))])
+    Add(a, b) =>
+      @dbg.ctor("Add", [(None, @dbg.debug(a)), (None, @dbg.debug(b))])
   }
 }
 ```
@@ -203,12 +204,12 @@ enum LabeledValue {
 }
 ```
 
-Use `ctor_args` with `CtorArg::Labeled` to preserve the labels:
+Use `ctor` with optional labels to preserve the labels:
 
 - `A(x=1, y="s")` →
-  `@repr.ctor_args("A", [@repr.CtorArg::Labeled("x", @repr.int(1)), @repr.CtorArg::Labeled("y", @repr.string("s"))])`
+  `@repr.ctor("A", [(Some("x"), @repr.int(1)), (Some("y"), @repr.string("s"))])`
 - `B(x=1, "s")` →
-  `@repr.ctor_args("B", [@repr.CtorArg::Labeled("x", @repr.int(1)), @repr.CtorArg::Pos(@repr.string("s"))])`
+  `@repr.ctor("B", [(Some("x"), @repr.int(1)), (None, @repr.string("s"))])`
 
 Example implementation:
 
@@ -216,16 +217,12 @@ Example implementation:
 pub impl @dbg.Debug for LabeledValue with debug(self) {
   match self {
     A(x~, y~) =>
-      @dbg.ctor_args(
+      @dbg.ctor(
         "A",
-        [@dbg.CtorArg::Labeled("x", @dbg.debug(x)), @dbg.CtorArg::Labeled("y", @dbg.debug(y))],
+        [(Some("x"), @dbg.debug(x)), (Some("y"), @dbg.debug(y))],
       )
-    B(x~, s) =>
-      @dbg.ctor_args(
-        "B",
-        [@dbg.CtorArg::Labeled("x", @dbg.debug(x)), @dbg.CtorArg::Pos(@dbg.debug(s))],
-      )
-    D(n) => @dbg.ctor("D", [@dbg.debug(n)])
+    B(x~, s) => @dbg.ctor("B", [(Some("x"), @dbg.debug(x)), (None, @dbg.debug(s))])
+    D(n) => @dbg.ctor("D", [(None, @dbg.debug(n))])
   }
 }
 ```

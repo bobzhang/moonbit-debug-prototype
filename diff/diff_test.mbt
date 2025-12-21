@@ -41,7 +41,7 @@ test "diff: tolerant doubles compare same" {
 
 ///|
 test "Repr is readonly but constructible via smart ctors" {
-  let info = @repr.Repr::ctor("X", [@repr.Repr::int(1)])
+  let info = @repr.Repr::ctor("X", [(None, @repr.Repr::int(1))])
   match info {
     Enum("X", [IntLit(1)]) => ()
     _ => fail("expected Enum(\"X\", [IntLit(1)])")

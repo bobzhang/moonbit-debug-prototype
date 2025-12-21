@@ -28,15 +28,18 @@ test "facade: Repr constructors pretty-print as expected" {
     content="{ a: 1, b: 2 }",
   )
   inspect(
-    pretty_print_repr_with(opts, Repr::ctor("Ok", [Repr::string("yes")])),
+    pretty_print_repr_with(
+      opts,
+      Repr::ctor("Ok", [(None, Repr::string("yes"))]),
+    ),
     content="Ok(\"yes\")",
   )
   inspect(
     pretty_print_repr_with(
       opts,
-      Repr::ctor_args("A", [
-        CtorArg::Labeled("x", Repr::int(1)),
-        CtorArg::Labeled("y", Repr::string("yes")),
+      Repr::ctor("A", [
+        (Some("x"), Repr::int(1)),
+        (Some("y"), Repr::string("yes")),
       ]),
     ),
     content="A(x=1, y=\"yes\")",
@@ -44,10 +47,7 @@ test "facade: Repr constructors pretty-print as expected" {
   inspect(
     pretty_print_repr_with(
       opts,
-      Repr::ctor_args("B", [
-        CtorArg::Labeled("x", Repr::int(1)),
-        CtorArg::Pos(Repr::string("s")),
-      ]),
+      Repr::ctor("B", [(Some("x"), Repr::int(1)), (None, Repr::string("s"))]),
     ),
     content="B(x=1, \"s\")",
   )

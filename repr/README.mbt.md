@@ -95,12 +95,12 @@ test {
 ## Labeled constructor arguments
 
 MoonBit enum variants (and tuple-struct constructors) can have labeled arguments.
-To preserve those labels in a `Repr` , use `Repr::ctor_args` with `CtorArg`:
+To preserve those labels in a `Repr` , use `Repr::ctor` with optional labels:
 
-* `Repr::ctor_args("A", [CtorArg::Labeled("x", ...), CtorArg::Labeled("y", ...)])`
+* `Repr::ctor("A", [(Some("x"), ...), (Some("y"), ...)])`
   prints as `A(x=..., y=...)`
 * you can freely mix positional and labeled args:
-`Repr::ctor_args("B", [CtorArg::Labeled("x", ...), CtorArg::Pos(...)])`
+`Repr::ctor("B", [(Some("x"), ...), (None, ...)])`
 prints as `B(x=..., ...)`
 
 ### Example (runnable)
@@ -108,9 +108,9 @@ prints as `B(x=..., ...)`
 ```mbt check
 ///|
 test {
-  let r : Repr = Repr::ctor_args("A", [
-    CtorArg::Labeled("x", Repr::int(1)),
-    CtorArg::Labeled("y", Repr::string("hi")),
+  let r : Repr = Repr::ctor("A", [
+    (Some("x"), Repr::int(1)),
+    (Some("y"), Repr::string("hi")),
   ])
   match r {
     Enum(

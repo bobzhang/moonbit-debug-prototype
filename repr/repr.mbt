@@ -79,49 +79,22 @@ pub enum Repr {
 } derive(Eq, Compare)
 
 ///|
-/// Constructor arguments for `Repr::ctor_args`.
-pub(all) enum CtorArg {
-  /// Positional constructor argument.
-  Pos(Repr)
-  /// Labeled constructor argument.
-  Labeled(String, Repr)
-} derive(Eq, Compare)
-
-///|
 pub fn Repr::unit() -> Repr {
   UnitLit
 }
 
 ///|
-/// Construct a positional constructor argument.
-pub fn CtorArg::pos(value : Repr) -> CtorArg {
-  Pos(value)
-}
-
-///|
-/// Construct a labeled constructor argument.
-pub fn CtorArg::labeled(label : String, value : Repr) -> CtorArg {
-  Labeled(label, value)
-}
-
-///|
 /// Construct an `Enum(name, args)` node for enum/constructor applications.
 ///
-/// This assumes positional arguments only. Use `Repr::ctor_args` to mix labeled
-/// and positional arguments.
-pub fn Repr::ctor(name : String, args : Array[Repr]) -> Repr {
-  Enum(name, args)
-}
-
-///|
-/// Construct an `Enum(name, args)` node from labeled/positional arguments.
-pub fn Repr::ctor_args(name : String, args : Array[CtorArg]) -> Repr {
+/// Use `None` for positional arguments and `Some(label)` for labeled ones.
+pub fn Repr::ctor(name : String, args : Array[(String?, Repr)]) -> Repr {
   Enum(
     name,
     args.map(fn(arg) {
-      match arg {
-        Pos(value) => value
-        Labeled(label, value) => Repr::labeled(label, value)
+      let (label, value) = arg
+      match label {
+        None => value
+        Some(label) => Repr::labeled(label, value)
       }
     }),
   )

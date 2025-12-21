@@ -10,15 +10,6 @@ import(
 // Errors
 
 // Types and methods
-pub(all) enum CtorArg {
-  Pos(Repr)
-  Labeled(String, Repr)
-}
-pub fn CtorArg::labeled(String, Repr) -> Self
-pub fn CtorArg::pos(Repr) -> Self
-pub impl Compare for CtorArg
-pub impl Eq for CtorArg
-
 pub enum Repr {
   UnitLit
   Int16Lit(Int16)
@@ -50,8 +41,7 @@ pub fn Repr::bigint(@bigint.BigInt) -> Self
 pub fn Repr::bool(Bool) -> Self
 pub fn Repr::char(Char) -> Self
 pub fn Repr::children(Self) -> Array[Self]
-pub fn Repr::ctor(String, Array[Self]) -> Self
-pub fn Repr::ctor_args(String, Array[CtorArg]) -> Self
+pub fn Repr::ctor(String, Array[(String?, Self)]) -> Self
 pub fn Repr::dict(Array[(Self, Self)]) -> Self
 pub fn Repr::double(Double) -> Self
 pub fn Repr::float(Float) -> Self

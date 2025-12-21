@@ -12,7 +12,7 @@ test "docs: building Repr manually" {
       @repr.Repr::int(2),
       @repr.Repr::int(3),
     ]),
-    "tag": @repr.Repr::ctor("Ok", [@repr.Repr::string("done")]),
+    "tag": @repr.Repr::ctor("Ok", [(None, @repr.Repr::string("done"))]),
   })
   inspect(
     pretty_print_repr_with(print_opts(), r),

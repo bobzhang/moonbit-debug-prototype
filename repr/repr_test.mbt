@@ -43,14 +43,11 @@ test "repr: record and dict builders are structural" {
 }
 
 ///|
-test "repr: ctor_args lowers labeled args" {
-  let r = Repr::ctor_args("A", [
-    CtorArg::Labeled("x", Repr::int(1)),
-    CtorArg::Pos(Repr::string("s")),
-  ])
+test "repr: ctor lowers labeled args" {
+  let r = Repr::ctor("A", [(Some("x"), Repr::int(1)), (None, Repr::string("s"))])
   match r {
     Enum("A", [EnumLabeledArg("x", IntLit(1)), StringLit("s")]) => ()
-    _ => fail("expected ctor_args to lower labeled args")
+    _ => fail("expected ctor to lower labeled args")
   }
 }
 
@@ -66,7 +63,7 @@ test "repr: with_children round-trips with children" {
     Repr::tuple([Repr::int(1), Repr::int(2)]),
     Repr::array([Repr::string("x")]),
     Repr::record({ "a": Repr::int(1) }),
-    Repr::ctor("C", [Repr::int(2)]),
+    Repr::ctor("C", [(None, Repr::int(2))]),
     Repr::opaque_("T", [Repr::string("x")]),
     Repr::dict([(Repr::string("k"), Repr::bool(true))]),
     // RecordField("f", Repr::int(3)),
