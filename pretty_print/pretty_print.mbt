@@ -84,7 +84,6 @@ fn info_size(info : @repr.Repr) -> Int {
     UInt64Lit(_) => 1
     DoubleLit(_) => 1
     FloatLit(_) => 1
-    BigIntLit(_) => 1
     BoolLit(_) => 1
     CharLit(_) => 1
     StringLit(s) => if s.length() <= 15 { 1 } else { 2 }
@@ -205,7 +204,6 @@ fn pretty_print_repr_go(
       let needs_parens : Bool = (1.0 : Float) / x < (0.0 : Float)
       @printer.leaf(x, needs_parens~)
     }
-    BigIntLit(x) => @printer.leaf_with_suffix(x, "N", needs_parens=x < 0N)
     BoolLit(x) => @printer.leaf(x)
     CharLit(x) => @printer.leaf(x)
     StringLit(x) =>

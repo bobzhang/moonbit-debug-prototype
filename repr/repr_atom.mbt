@@ -50,12 +50,6 @@ pub fn Repr::float(x : Float) -> Repr {
 }
 
 ///|
-/// Construct a `BigIntLit` leaf.
-pub fn Repr::bigint(x : BigInt) -> Repr {
-  BigIntLit(x)
-}
-
-///|
 /// Construct a `BoolLit` leaf.
 pub fn Repr::bool(x : Bool) -> Repr {
   BoolLit(x)

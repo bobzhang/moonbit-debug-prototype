@@ -1,10 +1,6 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "dii_user/moonbit_debugged/repr"
 
-import(
-  "moonbitlang/core/bigint"
-)
-
 // Values
 
 // Errors
@@ -20,7 +16,6 @@ pub enum Repr {
   UInt64Lit(UInt64)
   DoubleLit(Double)
   FloatLit(Float)
-  BigIntLit(@bigint.BigInt)
   BoolLit(Bool)
   CharLit(Char)
   StringLit(String)
@@ -37,7 +32,6 @@ pub enum Repr {
   Omitted
 }
 pub fn Repr::array(Array[Self]) -> Self
-pub fn Repr::bigint(@bigint.BigInt) -> Self
 pub fn Repr::bool(Bool) -> Self
 pub fn Repr::char(Char) -> Self
 pub fn Repr::children(Self) -> Array[Self]

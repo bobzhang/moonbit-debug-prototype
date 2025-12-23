@@ -106,17 +106,3 @@ test "pretty print: FloatLit" {
     content="-3.140000104904175",
   )
 }
-
-///|
-test "pretty print: BigIntLit" {
-  let pos = @repr.Repr::bigint(10000000000000000000000N)
-  let neg = @repr.Repr::bigint(-10000000000000000000000N)
-  inspect(
-    pretty_print_repr_with(print_opts(), pos),
-    content="10000000000000000000000N",
-  )
-  inspect(
-    pretty_print_repr_with(print_opts(), neg),
-    content="-10000000000000000000000N",
-  )
-}

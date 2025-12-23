@@ -1,14 +1,13 @@
-// | type     | description                                       | example                    |
-// | -------- | ------------------------------------------------- | -------------------------- |
-// | `Int16`  | 16-bit signed integer                             | `(42 : Int16)`             |
-// | `Int`    | 32-bit signed integer                             | `42`                       |
-// | `Int64`  | 64-bit signed integer                             | `1000L`                    |
-// | `UInt16` | 16-bit unsigned integer                           | `(14 : UInt16)`            |
-// | `UInt`   | 32-bit unsigned integer                           | `14U`                      |
-// | `UInt64` | 64-bit unsigned integer                           | `14UL`                     |
-// | `Double` | 64-bit floating point, defined by IEEE754         | `3.14`                     |
-// | `Float`  | 32-bit floating point                             | `(3.14 : Float)`           |
-// | `BigInt` | represents numeric values larger than other types | `10000000000000000000000N` |
+// | type     | description                               | example          |
+// | -------- | ----------------------------------------- | ---------------- |
+// | `Int16`  | 16-bit signed integer                     | `(42 : Int16)`   |
+// | `Int`    | 32-bit signed integer                     | `42`             |
+// | `Int64`  | 64-bit signed integer                     | `1000L`          |
+// | `UInt16` | 16-bit unsigned integer                   | `(14 : UInt16)`  |
+// | `UInt`   | 32-bit unsigned integer                   | `14U`            |
+// | `UInt64` | 64-bit unsigned integer                   | `14UL`           |
+// | `Double` | 64-bit floating point, defined by IEEE754 | `3.14`           |
+// | `Float`  | 32-bit floating point                     | `(3.14 : Float)` |
 
 ///|
 /// Direct structural representation for debugging/diffing/pretty-printing.
@@ -46,8 +45,6 @@ pub enum Repr {
   DoubleLit(Double)
   /// 32-bit floating-point literal leaf.
   FloatLit(Float)
-  /// Big integer literal leaf.
-  BigIntLit(BigInt)
   /// Boolean literal leaf.
   BoolLit(Bool)
   /// Character literal leaf.
@@ -119,7 +116,6 @@ pub fn Repr::children(self : Repr) -> Array[Repr] {
     | UInt64Lit(_)
     | DoubleLit(_)
     | FloatLit(_)
-    | BigIntLit(_)
     | BoolLit(_)
     | CharLit(_)
     | StringLit(_)
@@ -157,7 +153,6 @@ pub fn Repr::with_children(self : Repr, children : Array[Repr]) -> Repr {
     | UInt64Lit(_)
     | DoubleLit(_)
     | FloatLit(_)
-    | BigIntLit(_)
     | BoolLit(_)
     | CharLit(_)
     | StringLit(_)
@@ -218,7 +213,6 @@ pub fn Repr::shallow(self : Repr) -> Repr {
     | UInt64Lit(_)
     | DoubleLit(_)
     | FloatLit(_)
-    | BigIntLit(_)
     | BoolLit(_)
     | CharLit(_)
     | StringLit(_)
