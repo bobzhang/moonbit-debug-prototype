@@ -1,0 +1,21 @@
+{
+    "pre-build": [
+        {
+            "command": "./auto_derive/auto_derive $input $output",
+            "input": "input.mbt",
+            "output": "output.mbt"
+        }
+    ],
+    "import": [
+        "dii_user/moonbit_debugged/repr",
+        {
+            "path": "dii_user/moonbit_debugged",
+            "alias": "debug"
+        }
+    ],
+    "formatter": {
+        "ignore": [
+            "output.mbt"
+        ]
+    }
+}
