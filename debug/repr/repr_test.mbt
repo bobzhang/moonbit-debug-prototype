@@ -9,26 +9,6 @@ test "repr: with_children preserves leaves" {
 }
 
 ///|
-#cfg(false)
-test "repr: with_children falls back for fixed-arity nodes" {
-  // let p = Repr::field("k", Repr::int(1))
-  // match p.with_children([]) {
-  //   RecordField("k", Omitted) => ()
-  //   _ => fail("expected RecordField(_, Omitted) fallback")
-  // }
-  // let l = Repr::labeled("k", Repr::int(1))
-  // match l.with_children([]) {
-  //   EnumLabeledArg("k", Omitted) => ()
-  //   _ => fail("expected EnumLabeledArg(_, Omitted) fallback")
-  // }
-  // let e = Repr::entry(Repr::string("k"), Repr::int(1))
-  // match e.with_children([Repr::int(0)]) {
-  //   MapEntry(Omitted, Omitted) => ()
-  //   _ => fail("expected MapEntry(Omitted, Omitted) fallback")
-  // }
-}
-
-///|
 test "repr: record and dict builders are structural" {
   let r = @repr.Repr::record({ "a": Repr::int(1), "b": Repr::bool(true) })
   match r {

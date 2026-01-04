@@ -82,7 +82,7 @@ pub fn Repr::array(children : Array[Repr]) -> Repr {
 ///|
 /// Construct a `Record` node from pre-built child `Repr`s.
 pub fn Repr::record(fields : Map[String, Repr]) -> Repr {
-  Record(fields.to_array().map(fn(p) { Repr::field(p.0, p.1) }))
+  Record(fields.to_array().map(fn(p) { RecordField(p.0, p.1) }))
 }
 
 ///|
@@ -106,7 +106,7 @@ pub fn Repr::dict(contents : Array[(Repr, Repr)]) -> Repr {
   Map(
     contents.map(fn(pair) {
       let (k, v) = pair
-      Repr::entry(k, v)
+      MapEntry(k, v)
     }),
   )
 }
@@ -115,4 +115,26 @@ pub fn Repr::dict(contents : Array[(Repr, Repr)]) -> Repr {
 /// Construct an `Omitted` marker node.
 pub fn Repr::omitted() -> Repr {
   Omitted
+}
+
+///|
+pub fn Repr::unit() -> Repr {
+  UnitLit
+}
+
+///|
+/// Construct an `Enum(name, args)` node for enum/constructor applications.
+///
+/// Use `None` for positional arguments and `Some(label)` for labeled ones.
+pub fn Repr::ctor(name : String, args : Array[(String?, Repr)]) -> Repr {
+  Enum(
+    name,
+    args.map(fn(arg) {
+      let (label, value) = arg
+      match label {
+        None => value
+        Some(label) => EnumLabeledArg(label, value)
+      }
+    }),
+  )
 }

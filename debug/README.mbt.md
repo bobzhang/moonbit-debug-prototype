@@ -103,6 +103,7 @@ To automatically generate `Debug` implementations for your types:
 3. in your `input.mbt`, add `#debug.derive` attribute to your types:
 
 ```mbt
+///|
 #debug.derive
 struct Pos(Int, Int)
 ```

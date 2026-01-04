@@ -56,28 +56,6 @@ pub enum Repr {
 } derive(Eq, Compare)
 
 ///|
-pub fn Repr::unit() -> Repr {
-  UnitLit
-}
-
-///|
-/// Construct an `Enum(name, args)` node for enum/constructor applications.
-///
-/// Use `None` for positional arguments and `Some(label)` for labeled ones.
-pub fn Repr::ctor(name : String, args : Array[(String?, Repr)]) -> Repr {
-  Enum(
-    name,
-    args.map(fn(arg) {
-      let (label, value) = arg
-      match label {
-        None => value
-        Some(label) => Repr::labeled(label, value)
-      }
-    }),
-  )
-}
-
-///|
 /// Child nodes of a `Repr` node.
 ///
 /// Design notes:
