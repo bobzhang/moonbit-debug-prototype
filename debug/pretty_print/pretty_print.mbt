@@ -400,7 +400,17 @@ fn render_delta(
 }
 
 ///|
-/// Pretty-print a `Repr` with optional parameters.
+/// Pretty-print a `Repr`.
+///
+/// Optional parameters:
+/// - `max_depth?`: maximum expansion depth; deeper subtrees are replaced with `...`.
+///   Defaults to `4` when `None`. Values `<= 0` are treated as `1`.
+/// - `compact_threshold?`: compact-vs-multiline layout threshold.
+///   The printer uses a heuristic “size” for nodes; when the structure is deemed
+///   small enough under this threshold, it is kept on one line, otherwise it is
+///   broken into multiple lines.
+///   Larger values prefer single-line output. Defaults to `80` when `None`.
+/// - `use_ansi?`: whether to emit ANSI color escape codes. Defaults to `true` when `None`.
 pub fn pretty_print_repr(
   r : @repr.Repr,
   max_depth? : Int,
@@ -418,7 +428,15 @@ pub fn pretty_print_repr(
 }
 
 ///|
-/// Pretty-print a `ReprDelta` with optional parameters.
+/// Pretty-print a `ReprDelta`.
+///
+/// Optional parameters:
+/// - `max_depth?`: maximum expansion depth; deeper subtrees are folded.
+///   Defaults to `4` when `None`. Values `<= 0` are treated as `1`.
+/// - `compact_threshold?`: compact-vs-multiline layout threshold (heuristic one-line vs multiline).
+///   Larger values prefer single-line output. Defaults to `80` when `None`.
+/// - `use_ansi?`: whether to emit ANSI color escape codes (for +/- markers).
+///   Defaults to `true` when `None`.
 pub fn pretty_print_delta(
   d : @diff.ReprDelta,
   max_depth? : Int,

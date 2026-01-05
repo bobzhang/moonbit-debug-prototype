@@ -8,11 +8,14 @@ pub(all) enum DebugDelta {
 } derive(Eq, Compare)
 
 ///|
-/// A diff of two `Repr` values.
+/// A diff result between two `Repr` values.
+///
+/// Note: this is a thin wrapper around the internal `DebugDelta` so it can be
+/// exposed as part of the public API.
 pub struct ReprDelta(DebugDelta) derive(Eq, Compare)
 
 ///|
-/// Extract the underlying delta from a `ReprDelta`.
+/// Extract the underlying `DebugDelta`.
 pub fn ReprDelta::delta(self : ReprDelta) -> DebugDelta {
   self.0
 }
@@ -174,7 +177,12 @@ fn diff_info_with(
 }
 
 ///|
-/// Diff two `Repr` values with optional float tolerance.
+/// Diff two `Repr` values.
+///
+/// Optional parameters:
+/// - `max_relative_error?`: relative-error tolerance for `DoubleLit`.
+///   - When `None`, the default is `1e-12`.
+///   - Larger tolerances make floats less likely to be reported as different.
 pub fn diff_repr(
   x : @repr.Repr,
   y : @repr.Repr,
