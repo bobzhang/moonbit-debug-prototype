@@ -17,16 +17,12 @@ pub(all) enum DebugDelta {
   Extra1(@repr.Repr)
   Extra2(@repr.Repr)
 }
-pub impl Compare for DebugDelta
-pub impl Eq for DebugDelta
 
 pub struct ReprDelta(DebugDelta)
 pub fn ReprDelta::delta(Self) -> DebugDelta
 pub fn ReprDelta::from_delta(DebugDelta) -> Self
 #deprecated
 pub fn ReprDelta::inner(Self) -> DebugDelta
-pub impl Compare for ReprDelta
-pub impl Eq for ReprDelta
 
 // Type aliases
 

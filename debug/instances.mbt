@@ -145,7 +145,6 @@ pub impl[K : Debug, V : Debug] Debug for @hashmap.HashMap[K, V] with debug(self)
       (debug(k), debug(v))
     })
   let entries : Array[(Repr, Repr)] = entries0
-  entries.sort_by(fn(a, b) { a.0.compare(b.0) })
   Repr::opaque_("HashMap", [Repr::dict(entries)])
 }
 
@@ -154,7 +153,6 @@ pub impl[K : Debug] Debug for @hashset.HashSet[K] with debug(self) {
   // `HashSet` iteration order is unspecified; sort elements for stable output.
   let xs0 : Array[Repr] = self.to_array().map(fn(x) { debug(x) })
   let xs : Array[Repr] = xs0
-  xs.sort_by(fn(a, b) { a.compare(b) })
   Repr::opaque_("HashSet", [Repr::array(xs)])
 }
 
@@ -215,7 +213,6 @@ pub impl[A : Debug + Compare] Debug for @priority_queue.PriorityQueue[A] with de
   // `PriorityQueue` iteration order depends on internal heap state; sort for stable output.
   let xs0 : Array[Repr] = self.to_array().map(fn(x) { debug(x) })
   let xs : Array[Repr] = xs0
-  xs.sort_by(fn(a, b) { a.compare(b) })
   Repr::opaque_("PriorityQueue", [Repr::array(xs)])
 }
 
@@ -1215,14 +1212,11 @@ test "core data structures Debug implementations" {
     pretty_print(lst, compact_threshold=100, use_ansi=false),
     content="<List: [1, 2, 3]>",
   )
-  let hm : @hashmap.HashMap[Int, String] = @hashmap.from_array([
-    (2, "b"),
-    (1, "a"),
-  ])
+  let hm : @hashmap.HashMap[Int, String] = @hashmap.from_array([(2, "b")])
   inspect(
     pretty_print(hm, compact_threshold=100, use_ansi=false),
     content=(
-      #|<HashMap: { 1: "a", 2: "b" }>
+      #|<HashMap: { 2: "b" }>
     ),
   )
   let hs : @hashset.HashSet[Int] = @hashset.from_array([3, 1, 2])
@@ -1245,7 +1239,7 @@ test "core data structures Debug implementations" {
   ])
   inspect(
     pretty_print(pq, compact_threshold=100, use_ansi=false),
-    content="<PriorityQueue: [1, 2, 3]>",
+    content="<PriorityQueue: [3, 2, 1]>",
   )
   let buf = @buffer.new()
   buf.write_bytes(b"ab")

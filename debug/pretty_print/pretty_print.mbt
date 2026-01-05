@@ -17,7 +17,7 @@ let default_use_ansi : Bool = true
 fn prune_repr_info(max_depth : Int?, info : @repr.Repr) -> @repr.Repr {
   match max_depth {
     None => info
-    Some(depth) => info.prune_info(depth~)
+    Some(depth) => prune_info(info, depth~)
   }
 }
 
@@ -43,19 +43,19 @@ fn prune_delta(max_depth : Int?, delta : @diff.DebugDelta) -> @diff.DebugDelta {
         if d <= 0 {
           Same(@repr.Repr::omitted(), [])
         } else {
-          Different(left.prune_info(depth=d), right.prune_info(depth=d))
+          Different(prune_info(left, depth=d), prune_info(right, depth=d))
         }
       Extra1(x) =>
         if d <= 0 {
           Same(@repr.Repr::omitted(), [])
         } else {
-          Extra1(x.prune_info(depth=d))
+          Extra1(prune_info(x, depth=d))
         }
       Extra2(x) =>
         if d <= 0 {
           Same(@repr.Repr::omitted(), [])
         } else {
-          Extra2(x.prune_info(depth=d))
+          Extra2(prune_info(x, depth=d))
         }
     }
   }
@@ -451,4 +451,17 @@ pub fn pretty_print_delta(
   let use_ansi = use_ansi.unwrap_or(default_use_ansi)
   let delta = prune_delta(max_depth, d.delta())
   print_content(render_delta(threshold, use_ansi, delta).no_wrap())
+}
+
+///|
+/// Whether visiting this node should consume (decrement) the remaining depth budget.
+///
+/// This is used by depth-limited pruning: structural edge nodes like
+/// `RecordField` / `EnumLabeledArg` / `MapEntry` do not count as a depth level,
+/// so field names / labels can still be preserved when pruning.
+fn @repr.Repr::info_adds_depth(info : @repr.Repr) -> Bool {
+  match info {
+    RecordField(_, _) | EnumLabeledArg(_, _) | MapEntry(_, _) => false
+    _ => true
+  }
 }

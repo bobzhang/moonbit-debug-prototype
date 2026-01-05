@@ -1,17 +1,4 @@
 ///|
-/// Whether visiting this node should consume (decrement) the remaining depth budget.
-///
-/// This is used by depth-limited pruning: structural edge nodes like
-/// `RecordField` / `EnumLabeledArg` / `MapEntry` do not count as a depth level,
-/// so field names / labels can still be preserved when pruning.
-pub fn Repr::info_adds_depth(info : Repr) -> Bool {
-  match info {
-    RecordField(_, _) | EnumLabeledArg(_, _) | MapEntry(_, _) => false
-    _ => true
-  }
-}
-
-///|
 /// Prune a `Repr` tree to a given depth (replacing pruned subtrees).
 ///
 /// Parameters:
@@ -24,12 +11,12 @@ pub fn Repr::info_adds_depth(info : Repr) -> Bool {
 /// - When the depth budget is exhausted and the node has children:
 ///   - if `info_adds_depth() == false`, pruning continues into its children;
 ///   - otherwise the whole subtree is replaced by `replacement`.
-pub fn Repr::prune_info(
-  info : Repr,
-  replacement? : Repr = Repr::omitted(),
+pub fn prune_info(
+  info : @repr.Repr,
+  replacement? : @repr.Repr = @repr.Repr::omitted(),
   depth~ : Int,
-) -> Repr {
-  fn go(d : Int, node : Repr) -> Repr {
+) -> @repr.Repr {
+  fn go(d : Int, node : @repr.Repr) -> @repr.Repr {
     let children = node.children()
     if d <= 0 {
       if children.is_empty() {

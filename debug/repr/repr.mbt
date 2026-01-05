@@ -53,7 +53,7 @@ pub enum Repr {
   MapEntry(Repr, Repr)
   /// Pruned subtree marker used by depth-limited pretty-printing.
   Omitted
-} derive(Eq, Compare)
+}
 
 ///|
 /// Child nodes of a `Repr` node.

@@ -5,14 +5,14 @@ pub(all) enum DebugDelta {
   Different(@repr.Repr, @repr.Repr)
   Extra1(@repr.Repr)
   Extra2(@repr.Repr)
-} derive(Eq, Compare)
+}
 
 ///|
 /// A diff result between two `Repr` values.
 ///
 /// Note: this is a thin wrapper around the internal `DebugDelta` so it can be
 /// exposed as part of the public API.
-pub struct ReprDelta(DebugDelta) derive(Eq, Compare)
+pub struct ReprDelta(DebugDelta)
 
 ///|
 /// Extract the underlying `DebugDelta`.

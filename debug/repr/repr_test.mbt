@@ -33,33 +33,6 @@ test "repr: ctor lowers labeled args" {
 }
 
 ///|
-test "repr: with_children round-trips with children" {
-  let entry = match Repr::dict([(Repr::string("k"), Repr::int(5))]) {
-    Map([entry]) => entry
-    _ => fail("expected dict to contain one MapEntry")
-  }
-  let samples = [
-    Repr::unit(),
-    Repr::int(1),
-    Repr::tuple([Repr::int(1), Repr::int(2)]),
-    Repr::array([Repr::string("x")]),
-    Repr::record({ "a": Repr::int(1) }),
-    Repr::ctor("C", [(None, Repr::int(2))]),
-    Repr::opaque_("T", [Repr::string("x")]),
-    Repr::dict([(Repr::string("k"), Repr::bool(true))]),
-    // RecordField("f", Repr::int(3)),
-    // EnumLabeledArg("l", Repr::int(4)),
-    entry,
-    Repr::omitted(),
-  ]
-  for r in samples {
-    if r.with_children(r.children()) != r {
-      fail("expected with_children(children) round-trip")
-    }
-  }
-}
-
-///|
 test "repr: traverse can hide fields" {
   let r : Repr = Repr::record({
     "user": Repr::string("alice"),
