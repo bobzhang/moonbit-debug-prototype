@@ -12,21 +12,20 @@ It provides:
 
 Goals: 
 
-- A way to debug values and show the diff, with pretty-printing
+* A way to debug values and show the diff, with pretty-printing
 
-- Replacing Some Roles of `Show` and `ToJson`
+* Replacing Some Roles of `Show` and `ToJson`
 
   The current `Show` trait produces output that is not suitable for debugging, as it lacks indentation and line breaks.  
   The `ToJson` trait produces JSON, which is more readable with `@json.inspect` but not ideal for MoonBit-specific types (e.g., enums).  
   It can also confuse users who expect `ToJson` to produce structured data rather than a debug representation.
 
-  With the introduction of `Debug`, the `Show` trait can focus on producing specialized output (such as `Json::stringify`, `String::to_string`, etc.), and `derive(Show)` will be deprecated.
-
+  With the introduction of `Debug` , the `Show` trait can focus on producing specialized output (such as `Json::stringify` , `String::to_string` , etc.), and `derive(Show)` will be deprecated.
 
 Non-goals:
 
-- Deserializing from `Repr` back to original values
-- Output a valid moonbit code representation
+* Deserializing from `Repr` back to original values
+* Output a valid moonbit code representation
 
 ## Project structure
 
@@ -85,7 +84,8 @@ pub impl @dbg.Debug for Person with debug(self) {
 
 To automatically generate `Debug` implementations for your types:
 
-1. add `moonbit-community/debug_deriving` as a binary dependency in your `moon.mod.json` 
+1. add `moonbit-community/debug_deriving` as a binary dependency in your `moon.mod.json`
+
 2. add a `pre-build` command that runs the `debug_deriving` binary, for example:
 
 ```json
@@ -98,7 +98,7 @@ To automatically generate `Debug` implementations for your types:
     }
   ]
 }
-``` 
+```
 
 3. in your `input.mbt`, add `#debug.derive` attribute to your types:
 
@@ -115,7 +115,7 @@ All options are passed directly as optional parameters to functions:
 ### Pretty printing
 
 * `max_depth?`: optional depth limit; omit for default (4), or pass `max_depth=n` to prune
-* `compact_threshold?`: controls single-line vs multi-line rendering (default: 8)
+* `threshold?`: controls single-line vs multi-line rendering (default: 8)
 * `use_ansi?`: enables `+`/`-` with ANSI colors in diffs (default: true)
 
 ### Diffing

@@ -3,8 +3,10 @@
 let default_max_depth : Int = 4
 
 ///|
-/// Default compact threshold for layout decisions.
-let default_compact_threshold : Int = 8
+/// Default layout threshold for compact-vs-multiline decisions.
+///
+/// Larger values prefer single-line output.
+let default_threshold : Int = 80
 
 ///|
 /// Default ANSI color setting.
@@ -313,18 +315,14 @@ fn mark_removed(use_ansi : Bool, x : ContentParens) -> ContentParens {
 
 ///|
 /// Render a `Repr` as `Content` with resizing decisions.
-fn render_repr(
-  compact_threshold : Int,
-  use_ansi : Bool,
-  info : @repr.Repr,
-) -> Content {
+fn render_repr(threshold : Int, use_ansi : Bool, info : @repr.Repr) -> Content {
   let label = info.shallow()
   let children = info
     .children()
-    .map(fn(child) { render_repr(compact_threshold, use_ansi, child) })
+    .map(fn(child) { render_repr(threshold, use_ansi, child) })
   with_resizing(
     info_size(label),
-    compact_threshold,
+    threshold,
     fn(children) { pretty_print_repr_go(label, children) },
     children,
   )
@@ -333,30 +331,30 @@ fn render_repr(
 ///|
 /// Render a `DebugDelta` as `Content` with resizing decisions.
 fn render_delta(
-  compact_threshold : Int,
+  threshold : Int,
   use_ansi : Bool,
   delta : @diff.DebugDelta,
 ) -> Content {
   match delta {
     Same(label, children_delta) => {
       let children = children_delta.map(fn(child) {
-        render_delta(compact_threshold, use_ansi, child)
+        render_delta(threshold, use_ansi, child)
       })
       with_resizing(
         delta_root_size(delta),
-        compact_threshold,
+        threshold,
         fn(children) { pretty_print_repr_go(label, children) },
         children,
       )
     }
     Different(left, right) => {
       let children : Array[Content] = [
-        render_repr(compact_threshold, use_ansi, left),
-        render_repr(compact_threshold, use_ansi, right),
+        render_repr(threshold, use_ansi, left),
+        render_repr(threshold, use_ansi, right),
       ]
       with_resizing(
         0,
-        compact_threshold,
+        threshold,
         fn(children) {
           match children {
             [left, right] =>
@@ -371,12 +369,10 @@ fn render_delta(
       )
     }
     Extra1(x) => {
-      let children : Array[Content] = [
-        render_repr(compact_threshold, use_ansi, x),
-      ]
+      let children : Array[Content] = [render_repr(threshold, use_ansi, x)]
       with_resizing(
         0,
-        compact_threshold,
+        threshold,
         fn(children) {
           match children {
             [x] => no_parens(mark_removed(use_ansi, x.no_wrap()))
@@ -387,12 +383,10 @@ fn render_delta(
       )
     }
     Extra2(x) => {
-      let children : Array[Content] = [
-        render_repr(compact_threshold, use_ansi, x),
-      ]
+      let children : Array[Content] = [render_repr(threshold, use_ansi, x)]
       with_resizing(
         0,
-        compact_threshold,
+        threshold,
         fn(children) {
           match children {
             [x] => no_parens(mark_added(use_ansi, x.no_wrap()))
@@ -417,10 +411,10 @@ pub fn pretty_print_repr(
     Some(_) => max_depth
     None => Some(default_max_depth)
   }
-  let compact_threshold = compact_threshold.unwrap_or(default_compact_threshold)
+  let threshold = compact_threshold.unwrap_or(default_threshold)
   let use_ansi = use_ansi.unwrap_or(default_use_ansi)
   let info = prune_repr_info(max_depth, r)
-  print_content(render_repr(compact_threshold, use_ansi, info).no_wrap())
+  print_content(render_repr(threshold, use_ansi, info).no_wrap())
 }
 
 ///|
@@ -435,8 +429,8 @@ pub fn pretty_print_delta(
     Some(_) => max_depth
     None => Some(default_max_depth)
   }
-  let compact_threshold = compact_threshold.unwrap_or(default_compact_threshold)
+  let threshold = compact_threshold.unwrap_or(default_threshold)
   let use_ansi = use_ansi.unwrap_or(default_use_ansi)
   let delta = prune_delta(max_depth, d.delta())
-  print_content(render_delta(compact_threshold, use_ansi, delta).no_wrap())
+  print_content(render_delta(threshold, use_ansi, delta).no_wrap())
 }

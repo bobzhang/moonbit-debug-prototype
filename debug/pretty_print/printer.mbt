@@ -286,7 +286,7 @@ fn bracket_seq_lines(
     [] => [open + close]
     [item] =>
       // If the item itself is multi-line, keep the surrounding brackets/braces
-      // multi-line too (important for nested structures when compact_threshold=0).
+      // multi-line too (important for nested structures when threshold=0).
       // Also ensure the single element still gets a trailing comma in multi-line mode.
       if item.length() > 1 {
         let lines = indent_spaces(indent_by, { size: 0, lines: item }).lines
@@ -466,30 +466,45 @@ fn print_content(r : ContentParens) -> String {
 }
 
 ///|
-/// Total “size” of a node (root + children), used for compact decisions.
-fn measure(root_size : Int, children : Array[Content]) -> Int {
-  let mut total = root_size
-  for c in children {
-    total += c.size
+/// Measure the maximum line width (in characters).
+fn max_line_width(lines : Array[String]) -> Int {
+  let mut m = 0
+  for line in lines {
+    // `String::length()` counts UTF-16 code units; this is good enough for a
+    // debug pretty printer.
+    let w = line.length()
+    if w > m {
+      m = w
+    }
   }
-  total
+  m
 }
 
 ///|
-/// Render compactly when the measured size stays under `threshold`.
+/// Render compactly when the compact single-line layout stays under `threshold`.
+///
+/// `threshold` is treated as a *maximum width hint* (not a structural node count).
+/// This fixes cases where a structurally small tree expands to a very long single
+/// line (e.g. deeply nested `Cons(...)`).
 fn with_resizing(
-  root_size : Int,
+  _root_size : Int,
   threshold : Int,
   f : (Array[Content]) -> Content,
   children : Array[Content],
 ) -> Content {
-  // `compact_threshold=0` is used by tests/users to force multi-line output.
+  // `threshold=0` is used by tests/users to force multi-line output.
   // In that mode we should never run the compaction pass.
+  let rendered = f(children)
   if threshold <= 0 {
-    f(children)
-  } else if measure(root_size, children) <= threshold {
-    f(children).compact()
+    rendered
   } else {
-    f(children)
+    let compacted = rendered.compact()
+    // Compacting is intended to produce a single line for the current node.
+    // Still, we use the max line width to be safe.
+    if max_line_width(compacted.lines) <= threshold {
+      compacted
+    } else {
+      rendered
+    }
   }
 }

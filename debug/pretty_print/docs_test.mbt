@@ -11,6 +11,143 @@ struct Example {
 }
 
 ///|
+enum List {
+  Cons(Example, List)
+  Nil
+}
+
+///|
+fn List::debug(x : Self) -> @repr.Repr {
+  match x {
+    Cons(a, b) =>
+      @repr.Repr::ctor("Cons", [(None, example_repr(a)), (None, List::debug(b))])
+    Nil => @repr.Repr::ctor("Nil", [])
+  }
+}
+
+///|
+test "Nested List" {
+  let rcd = { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") }
+  fn repeat(n) {
+    if n == 0 {
+      Nil
+    } else {
+      Cons(rcd, repeat(n - 1))
+    }
+  }
+
+  inspect(
+    pretty_print_repr(repeat(10).debug(), max_depth=100, compact_threshold=100),
+    content=(
+      #|Cons(
+      #|  { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|  Cons(
+      #|    { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|    Cons(
+      #|      { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|      Cons(
+      #|        { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|        Cons(
+      #|          { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|          Cons(
+      #|            { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|            Cons(
+      #|              { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|              Cons(
+      #|                { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|                Cons(
+      #|                  { answer: 1, xs: [1, 2, 3], tag: Ok("test string result") },
+      #|                  Cons({ answer: 1, xs: [1, 2, 3], tag: Ok("test string result") }, Nil),
+      #|                ),
+      #|              ),
+      #|            ),
+      #|          ),
+      #|        ),
+      #|      ),
+      #|    ),
+      #|  ),
+      #|)
+    ),
+  )
+  inspect(
+    pretty_print_repr(repeat(10).debug(), max_depth=100, compact_threshold=10),
+    content=(
+      #|Cons(
+      #|  {
+      #|    answer: 1,
+      #|    xs: [1, 2, 3],
+      #|    tag: Ok("test string result"),
+      #|  },
+      #|  Cons(
+      #|    {
+      #|      answer: 1,
+      #|      xs: [1, 2, 3],
+      #|      tag: Ok("test string result"),
+      #|    },
+      #|    Cons(
+      #|      {
+      #|        answer: 1,
+      #|        xs: [1, 2, 3],
+      #|        tag: Ok("test string result"),
+      #|      },
+      #|      Cons(
+      #|        {
+      #|          answer: 1,
+      #|          xs: [1, 2, 3],
+      #|          tag: Ok("test string result"),
+      #|        },
+      #|        Cons(
+      #|          {
+      #|            answer: 1,
+      #|            xs: [1, 2, 3],
+      #|            tag: Ok("test string result"),
+      #|          },
+      #|          Cons(
+      #|            {
+      #|              answer: 1,
+      #|              xs: [1, 2, 3],
+      #|              tag: Ok("test string result"),
+      #|            },
+      #|            Cons(
+      #|              {
+      #|                answer: 1,
+      #|                xs: [1, 2, 3],
+      #|                tag: Ok("test string result"),
+      #|              },
+      #|              Cons(
+      #|                {
+      #|                  answer: 1,
+      #|                  xs: [1, 2, 3],
+      #|                  tag: Ok("test string result"),
+      #|                },
+      #|                Cons(
+      #|                  {
+      #|                    answer: 1,
+      #|                    xs: [1, 2, 3],
+      #|                    tag: Ok("test string result"),
+      #|                  },
+      #|                  Cons(
+      #|                    {
+      #|                      answer: 1,
+      #|                      xs: [1, 2, 3],
+      #|                      tag: Ok("test string result"),
+      #|                    },
+      #|                    Nil,
+      #|                  ),
+      #|                ),
+      #|              ),
+      #|            ),
+      #|          ),
+      #|        ),
+      #|      ),
+      #|    ),
+      #|  ),
+      #|)
+    ),
+  )
+}
+
+///|
 fn tag_repr(tag : Tag) -> @repr.Repr {
   match tag {
     Ok(value) => @repr.Repr::ctor("Ok", [(None, @repr.Repr::string(value))])
@@ -84,7 +221,7 @@ fn numbers_repr(value : Numbers) -> @repr.Repr {
 }
 
 ///|
-test "docs: compact_threshold controls single-line vs multi-line" {
+test "docs: threshold controls single-line vs multi-line" {
   let sample : Numbers = { xs: [1, 2, 3] }
   let r = numbers_repr(sample)
   let compact = pretty_print_repr(r)

@@ -948,20 +948,7 @@ test "tuple Debug implementations" {
   inspect(
     pretty_print((1, "a", true, 2.0, 'c', 6, "g", false, 9, "j", 11, "l")),
     content=(
-      #|(
-      #|  1,
-      #|  "a",
-      #|  true,
-      #|  2,
-      #|  'c',
-      #|  6,
-      #|  "g",
-      #|  false,
-      #|  9,
-      #|  "j",
-      #|  11,
-      #|  "l",
-      #|)
+      #|(1, "a", true, 2, 'c', 6, "g", false, 9, "j", 11, "l")
     ),
   )
 
@@ -969,21 +956,7 @@ test "tuple Debug implementations" {
   inspect(
     pretty_print((1, "a", true, 2.0, 'c', 6, "g", false, 9, "j", 11, "l", 13)),
     content=(
-      #|(
-      #|  1,
-      #|  "a",
-      #|  true,
-      #|  2,
-      #|  'c',
-      #|  6,
-      #|  "g",
-      #|  false,
-      #|  9,
-      #|  "j",
-      #|  11,
-      #|  "l",
-      #|  13,
-      #|)
+      #|(1, "a", true, 2, 'c', 6, "g", false, 9, "j", 11, "l", 13)
     ),
   )
 
@@ -993,22 +966,7 @@ test "tuple Debug implementations" {
       (1, "a", true, 2.0, 'c', 6, "g", false, 9, "j", 11, "l", 13, "n"),
     ),
     content=(
-      #|(
-      #|  1,
-      #|  "a",
-      #|  true,
-      #|  2,
-      #|  'c',
-      #|  6,
-      #|  "g",
-      #|  false,
-      #|  9,
-      #|  "j",
-      #|  11,
-      #|  "l",
-      #|  13,
-      #|  "n",
-      #|)
+      #|(1, "a", true, 2, 'c', 6, "g", false, 9, "j", 11, "l", 13, "n")
     ),
   )
 
@@ -1018,23 +976,7 @@ test "tuple Debug implementations" {
       (1, "a", true, 2.0, 'c', 6, "g", false, 9, "j", 11, "l", 13, "n", 15),
     ),
     content=(
-      #|(
-      #|  1,
-      #|  "a",
-      #|  true,
-      #|  2,
-      #|  'c',
-      #|  6,
-      #|  "g",
-      #|  false,
-      #|  9,
-      #|  "j",
-      #|  11,
-      #|  "l",
-      #|  13,
-      #|  "n",
-      #|  15,
-      #|)
+      #|(1, "a", true, 2, 'c', 6, "g", false, 9, "j", 11, "l", 13, "n", 15)
     ),
   )
 
@@ -1044,24 +986,7 @@ test "tuple Debug implementations" {
       (1, "a", true, 2.0, 'c', 6, "g", false, 9, "j", 11, "l", 13, "n", 15, "p"),
     ),
     content=(
-      #|(
-      #|  1,
-      #|  "a",
-      #|  true,
-      #|  2,
-      #|  'c',
-      #|  6,
-      #|  "g",
-      #|  false,
-      #|  9,
-      #|  "j",
-      #|  11,
-      #|  "l",
-      #|  13,
-      #|  "n",
-      #|  15,
-      #|  "p",
-      #|)
+      #|(1, "a", true, 2, 'c', 6, "g", false, 9, "j", 11, "l", 13, "n", 15, "p")
     ),
   )
 
@@ -1074,25 +999,7 @@ test "tuple Debug implementations" {
       ),
     ),
     content=(
-      #|(
-      #|  1,
-      #|  "a",
-      #|  true,
-      #|  2,
-      #|  'c',
-      #|  6,
-      #|  "g",
-      #|  false,
-      #|  9,
-      #|  "j",
-      #|  11,
-      #|  "l",
-      #|  13,
-      #|  "n",
-      #|  15,
-      #|  "p",
-      #|  17,
-      #|)
+      #|(1, "a", true, 2, 'c', 6, "g", false, 9, "j", 11, "l", 13, "n", 15, "p", 17)
     ),
   )
 
