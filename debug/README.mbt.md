@@ -17,7 +17,7 @@ Goals:
 * Replacing Some Roles of `Show` and `ToJson`
 
   The current `Show` trait produces output that is not suitable for debugging, as it lacks indentation and line breaks.  
-  The `ToJson` trait produces JSON, which is more readable with `@json.inspect` but not ideal for MoonBit-specific types (e.g., enums).  
+  The `ToJson` trait produces JSON, which is more readable with `json_inspect` but not ideal for MoonBit-specific types (e.g., enums).  
   It can also confuse users who expect `ToJson` to produce structured data rather than a debug representation.
 
   With the introduction of `Debug` , the `Show` trait can focus on producing specialized output (such as `Json::stringify` , `String::to_string` , etc.), and `derive(Show)` will be deprecated.

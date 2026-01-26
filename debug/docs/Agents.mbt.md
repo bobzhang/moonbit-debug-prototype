@@ -238,8 +238,8 @@ test "inspect test" {
   inspect(result, content="3")
   // The `content` can be auto-corrected by running `moon test --update`
   let point = Point::{ x: 10, y: 20 }
-  // For complex structures, use @json.inspect for better readability:
-  @json.inspect(point, content={ "x": 10, "y": 20 })
+  // For complex structures, use json_inspect for better readability:
+  json_inspect(point, content={ "x": 10, "y": 20 })
 }
 ```
 
@@ -467,7 +467,7 @@ Most types can automatically derive standard traits using the `derive(...)` synt
 - **`Show`** - Enables `to_string()` and string interpolation with `\{value}`
 - **`Eq`** - Enables `==` and `!=` equality operators
 - **`Compare`** - Enables `<`, `>`, `<=`, `>=` comparison operators
-- **`ToJson`** - Enables `@json.inspect()` for readable test output
+- **`ToJson`** - Enables `json_inspect()` for readable test output
 - **`Hash`** - Enables use as Map keys
 
 ```mbt check
@@ -484,7 +484,7 @@ enum Status {
 } derive(Show, Eq, Compare)
 ```
 
-**Best practice**: Always derive `Show` and `Eq` for data types. Add `ToJson` if you plan to test them with `@json.inspect()`.
+**Best practice**: Always derive `Show` and `Eq` for data types. Add `ToJson` if you plan to test them with `json_inspect()`.
 
 ## Reference Semantics by Default
 
@@ -1254,8 +1254,8 @@ Practical testing guidance for MoonBit. Keep tests black-box by default and rely
 - Black-box by default: Call only public APIs via `@package.fn`. Use white-box tests only when private members matter.
 - **Snapshots**: Prefer `inspect(value, content="...")`. If unknown, write `inspect(value)` and run `moon test --update` (or `moon test -u`).
   - Use regular `inspect()` for simple values (uses `Show` trait)
-  - Use `@json.inspect()` for complex nested structures (uses `ToJson` trait, produces more readable output)
-  - It is encouraged to `inspect` or `@json.inspect` the whole return value of a function if
+  - Use `json_inspect()` for complex nested structures (uses `ToJson` trait, produces more readable output)
+  - It is encouraged to `inspect` or `json_inspect` the whole return value of a function if
     the whole return value is not huge, this makes test simple. You need `impl (Show|ToJson) for YourType` or `derive (Show, ToJson)`.
   - **Update workflow**: After changing code that affects output, run `moon test --update` to regenerate snapshots, then review the diffs in your test files (the `content=` parameter will be updated automatically).
 - Grouping: Combine related checks in one `test { ... }` block for speed and clarity.
