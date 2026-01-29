@@ -17,7 +17,7 @@ Goals:
 * Replacing Some Roles of `Show` and `ToJson`
 
   The current `Show` trait produces output that is not suitable for debugging, as it lacks indentation and line breaks.  
-  The `ToJson` trait produces JSON, which is more readable with `@json.inspect` but not ideal for MoonBit-specific types (e.g., enums).  
+  The `ToJson` trait produces JSON, which is more readable with `json_inspect` but not ideal for MoonBit-specific types (e.g., enums).  
   It can also confuse users who expect `ToJson` to produce structured data rather than a debug representation.
 
   With the introduction of `Debug` , the `Show` trait can focus on producing specialized output (such as `Json::stringify` , `String::to_string` , etc.), and `derive(Show)` will be deprecated.
@@ -55,7 +55,7 @@ In another package, import this module in `moon.pkg.json` :
 
 Then call:
 
-```mbt
+```mbt nocheck
 ///|
 fn show_examples {
   println(@dbg.pretty_print([1, 2, 3]))
@@ -67,7 +67,7 @@ fn show_examples {
 
 Use `record` , `ctor` , `array` , and friends to build a `Repr` :
 
-```mbt
+```mbt nocheck
 ///|
 struct Person {
   name : String
@@ -102,7 +102,7 @@ To automatically generate `Debug` implementations for your types:
 
 3. in your `input.mbt`, add `#debug.derive` attribute to your types:
 
-```mbt
+```mbt nocheck
 ///|
 #debug.derive
 struct Pos(Int, Int)

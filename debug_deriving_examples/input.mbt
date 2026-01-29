@@ -36,7 +36,9 @@ struct Pair(Int, Bool)
 
 ///|
 #debug.derive
-suberror KeyNotFound (String, SourceLoc)
+suberror KeyNotFound {
+  KeyNotFound((String, SourceLoc))
+}
 
 ///|
 let loc : SourceLoc = get_loc()

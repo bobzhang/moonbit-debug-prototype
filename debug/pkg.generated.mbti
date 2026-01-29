@@ -1,17 +1,17 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/debug"
 
-import(
-  "moonbit-community/debug/diff"
-  "moonbit-community/debug/repr"
-  "moonbitlang/core/buffer"
-  "moonbitlang/core/deque"
-  "moonbitlang/core/hashmap"
-  "moonbitlang/core/hashset"
-  "moonbitlang/core/list"
-  "moonbitlang/core/priority_queue"
-  "moonbitlang/core/queue"
-)
+import {
+  "moonbit-community/debug/diff",
+  "moonbit-community/debug/repr",
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/deque",
+  "moonbitlang/core/hashmap",
+  "moonbitlang/core/hashset",
+  "moonbitlang/core/list",
+  "moonbitlang/core/priority_queue",
+  "moonbitlang/core/queue",
+}
 
 // Values
 pub fn[T : Debug] debug(T) -> @repr.Repr

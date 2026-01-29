@@ -1,0 +1,16 @@
+{
+  "name": "moonbit-community/debug-ci",
+  "version": "0.0.0",
+  "deps": {
+    "moonbit-community/debug": {
+      "path": "./debug"
+    }
+  },
+  "readme": "README.md",
+  "repository": "https://github.com/moonbit-community/debug",
+  "license": "Apache-2.0",
+  "keywords": [
+    "debug"
+  ],
+  "description": "CI workspace module for this repo"
+}
